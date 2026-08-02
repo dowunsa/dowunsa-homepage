@@ -337,6 +337,16 @@
         <div class="field">
           <label for="birth_date">생년월일 <span class="req">*</span></label>
           <input type="date" id="birth_date" required>
+          <div class="check-group" style="flex-direction:row;gap:1.2rem;margin-top:0.6rem;">
+            <label class="check-item" style="gap:0.4rem;">
+              <input type="radio" name="birth_calendar" value="solar" checked>
+              <span class="check-label" style="font-size:0.78rem;">양력</span>
+            </label>
+            <label class="check-item" style="gap:0.4rem;">
+              <input type="radio" name="birth_calendar" value="lunar">
+              <span class="check-label" style="font-size:0.78rem;">음력</span>
+            </label>
+          </div>
         </div>
         <div class="field">
           <label for="birth_time">태어난 시간</label>
@@ -475,6 +485,7 @@
       phone: document.getElementById('phone').value,
       contact_pref: document.getElementById('contact_pref').value,
       birth_date: document.getElementById('birth_date').value,
+      birth_calendar: document.querySelector('input[name="birth_calendar"]:checked').value,
       birth_time: document.getElementById('birth_time').value,
       pref_date1: document.getElementById('pref_date1').value || '미입력',
       pref_date2: document.getElementById('pref_date2').value || '미입력',

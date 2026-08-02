@@ -414,7 +414,7 @@ function renderCard(id, r) {
     <div class="card-grid">
       <div><span>연락처</span>${escapeHtml(r.phone||'-')}</div>
       <div><span>선호 연락</span>${escapeHtml(r.contact_pref||'-')}</div>
-      <div><span>생년월일</span>${escapeHtml(r.birth_date||'-')}</div>
+      <div><span>생년월일</span>${escapeHtml(r.birth_date||'-')} ${r.birth_date ? `(${r.birth_calendar==='lunar'?'음력':'양력'})` : ''}</div>
       <div><span>태어난 시간</span>${escapeHtml(r.birth_time||'-')}</div>
       <div><span>희망일정 1</span>${escapeHtml(r.pref_date1||'-')}</div>
       <div><span>희망일정 2</span>${escapeHtml(r.pref_date2||'-')}</div>
@@ -424,18 +424,23 @@ function renderCard(id, r) {
     ${r.concern ? `<div class="card-concern">${escapeHtml(r.concern)}</div>` : ''}
     <div class="card-actions">
       <button class="card-btn primary" onclick="openConfirmModal('${id}')">${isConfirmed ? '확정 일정 수정' : '예약 확정'}</button>
-      <button class="card-btn" onclick="toggleSaju('${id}','${r.birth_date||''}','${r.birth_time||''}')">사주 보기</button>
+      <button class="card-btn" onclick="toggleSaju('${id}','${r.birth_date||''}','${r.birth_time||''}','${r.birth_calendar||'solar'}')">사주 보기</button>
       <button class="card-btn" onclick="toggleDone('${id}', ${!isDone})">${isDone ? '완료 취소' : '완료 처리'}</button>
     </div>
     <div class="saju-panel" id="saju-${id}"></div>
   </div>`;
 }
 
-function toggleSaju(id, birthDate, birthTime) {
+function toggleSaju(id, birthDate, birthTime, birthCalendar) {
   const panel = document.getElementById('saju-' + id);
   const isShown = panel.classList.contains('show');
   if (isShown) { panel.classList.remove('show'); panel.innerHTML=''; return; }
   if (!birthDate) { panel.innerHTML = '<p style="font-size:0.8rem;color:var(--ink-muted);">생년월일 정보가 없습니다.</p>'; panel.classList.add('show'); return; }
+  if (birthCalendar === 'lunar') {
+    panel.innerHTML = '<p style="font-size:0.82rem;color:#8a3030;line-height:1.7;">⚠ 음력 생년월일은 자동 계산되지 않습니다. 포털에서 "음력 양력 변환"으로 검색해 양력으로 바꾼 뒤, <a href="admin-saju.html" target="_blank" style="color:var(--gold);">사주 계산기</a>에서 양력으로 다시 계산해주세요.</p>';
+    panel.classList.add('show');
+    return;
+  }
   const hourZhiIdx = BIRTH_TIME_TO_ZHI.hasOwnProperty(birthTime) ? BIRTH_TIME_TO_ZHI[birthTime] : null;
   const pillars = calcSajuData(birthDate, hourZhiIdx);
   panel.innerHTML = renderSaju(pillars);

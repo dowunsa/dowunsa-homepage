@@ -78,6 +78,14 @@
     <div class="field">
       <label for="birth_date">생년월일</label>
       <input type="date" id="birth_date">
+      <div style="display:flex;gap:1.2rem;margin-top:0.6rem;">
+        <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--ink-light);cursor:pointer;">
+          <input type="radio" name="birth_calendar" value="solar" checked> 양력
+        </label>
+        <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--ink-light);cursor:pointer;">
+          <input type="radio" name="birth_calendar" value="lunar"> 음력
+        </label>
+      </div>
     </div>
     <div class="field">
       <label for="birth_time">태어난 시간</label>
@@ -160,6 +168,18 @@ function mod(n, m) { return ((n % m) + m) % m; }
 function calcSaju() {
   const dateVal = document.getElementById('birth_date').value;
   if (!dateVal) { alert('생년월일을 입력해주세요.'); return; }
+  const calendarType = document.querySelector('input[name="birth_calendar"]:checked').value;
+
+  if (calendarType === 'lunar') {
+    document.getElementById('pillars').innerHTML = '';
+    document.getElementById('elements').innerHTML = '';
+    document.getElementById('interp').innerHTML =
+      '⚠ 음력 생년월일은 이 계산기에서 자동 변환하지 않습니다 (정확한 만세력 데이터 없이 임의로 계산하면 틀릴 위험이 있어 일부러 막아두었습니다).<br><br>' +
+      '포털에서 <strong>"음력 양력 변환"</strong>으로 검색해 양력 날짜로 바꾸신 뒤, 위에서 <strong>양력</strong>을 선택하고 그 날짜로 다시 계산해주세요.';
+    document.getElementById('result').classList.add('show');
+    return;
+  }
+
   const [y, m, d] = dateVal.split('-').map(Number);
   const timeVal = document.getElementById('birth_time').value;
   const hourKnown = timeVal !== '모름';
