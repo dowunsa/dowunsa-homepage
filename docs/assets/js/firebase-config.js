@@ -4,12 +4,12 @@
    받은 값을 아래 그대로 채워 넣으면 예약폼/관리자 페이지가 전부 작동합니다.
    이 값들은 공개되어도 안전합니다 (Firebase 보안은 API 키가 아니라 Firestore 보안 규칙으로 관리됩니다). */
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyB9yjsj8WnOLvccOa9w15mSVpX514lzbQQ",
+  authDomain: "dowunsa.firebaseapp.com",
+  projectId: "dowunsa",
+  storageBucket: "dowunsa.firebasestorage.app",
+  messagingSenderId: "1050991486474",
+  appId: "1:1050991486474:web:282befd861980e5e99a1f3"
 };
 
 /* Firebase 콘솔 > 프로젝트 설정 > Cloud Messaging > 웹 푸시 인증서 에서 발급받는 키.
