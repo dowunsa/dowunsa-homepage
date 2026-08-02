@@ -17,5 +17,10 @@ service cloud.firestore {
     match /admin_tokens/{tokenId} {
       allow read, write: if isAdmin();
     }
+
+    // 확정된 예약(캘린더용): 관리자 본인만 접근 가능
+    match /appointments/{appointmentId} {
+      allow read, write: if isAdmin();
+    }
   }
 }

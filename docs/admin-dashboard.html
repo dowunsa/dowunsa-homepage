@@ -22,16 +22,34 @@
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--cream); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.7; }
-  header { padding: 1.2rem 1.5rem; border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--cream); z-index: 10; }
+  header { padding: 1.2rem 1.5rem; border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--cream); z-index: 20; flex-wrap: wrap; gap: 0.8rem; }
   .logo { font-family: var(--serif); font-size: 1.05rem; color: var(--ink); }
-  .head-actions { display: flex; gap: 0.8rem; align-items: center; }
+  .head-actions { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; }
   .head-btn { font-size: 0.75rem; color: var(--ink-muted); text-decoration: none; border: 0.5px solid var(--border); padding: 0.4rem 0.9rem; background: none; cursor: pointer; font-family: var(--sans); }
   .head-btn:hover { border-color: var(--gold); color: var(--gold); }
-  .page { max-width: 900px; margin: 0 auto; padding: 2rem 1.2rem 5rem; }
-  .page-title { font-family: var(--serif); font-size: 1.4rem; font-weight: 300; margin-bottom: 0.3rem; }
-  .page-sub { font-size: 0.8rem; color: var(--ink-muted); margin-bottom: 2rem; }
-  .notif-btn { font-size: 0.72rem; color: var(--sage); border: 0.5px solid var(--sage); background: var(--sage-light); padding: 0.5rem 1rem; cursor: pointer; margin-bottom: 1.5rem; display: inline-block; }
 
+  .page { max-width: 1100px; margin: 0 auto; padding: 1.6rem 1.2rem 5rem; display: grid; grid-template-columns: 190px 1fr; gap: 1.8rem; }
+  @media (max-width: 780px) { .page { grid-template-columns: 1fr; } }
+
+  /* ── 사이드바 ── */
+  .sidebar { }
+  .add-appt-btn { width: 100%; background: var(--ink); color: var(--cream); border: none; padding: 0.75rem; font-family: var(--sans); font-size: 0.8rem; letter-spacing: 0.05em; cursor: pointer; margin-bottom: 1.2rem; }
+  .add-appt-btn:hover { background: var(--gold); }
+  .cat-list { display: flex; flex-direction: column; border-top: 0.5px solid var(--border); }
+  .cat-item { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0.3rem; font-size: 0.82rem; color: var(--ink-light); border-bottom: 0.5px solid var(--border); cursor: pointer; background: none; border-left: none; border-right: none; border-top: none; width: 100%; text-align: left; font-family: var(--sans); }
+  .cat-item:hover { color: var(--gold); }
+  .cat-item.active { color: var(--gold); font-weight: 600; }
+  .cat-count { font-size: 0.72rem; color: var(--ink-muted); background: var(--sage-light); padding: 0.1rem 0.5rem; border-radius: 20px; }
+
+  /* ── 메인 ── */
+  .main { min-width: 0; }
+  .view-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.4rem; }
+  .view-tab { font-size: 0.82rem; padding: 0.5rem 1.1rem; border: 0.5px solid var(--border); background: white; cursor: pointer; color: var(--ink-light); font-family: var(--sans); }
+  .view-tab.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+  .page-title { font-family: var(--serif); font-size: 1.3rem; font-weight: 300; margin-bottom: 0.3rem; }
+  .page-sub { font-size: 0.8rem; color: var(--ink-muted); margin-bottom: 1.4rem; }
+
+  /* ── 카드 (목록 뷰) ── */
   .card { background: white; border: 0.5px solid var(--border); margin-bottom: 1rem; padding: 1.3rem 1.4rem; }
   .card.done { opacity: 0.5; }
   .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
@@ -39,12 +57,14 @@
   .card-time { font-size: 0.72rem; color: var(--ink-muted); }
   .badge { display: inline-block; font-size: 0.65rem; letter-spacing: 0.05em; border: 0.5px solid var(--gold); color: var(--gold); padding: 0.15rem 0.6rem; margin-left: 0.5rem; }
   .badge.done { border-color: var(--sage); color: var(--sage); }
+  .badge.confirmed { border-color: var(--sage); color: var(--sage); background: var(--sage-light); }
   .card-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap: 0.7rem 1.2rem; font-size: 0.82rem; margin-bottom: 0.9rem; }
   .card-grid div span { display: block; font-size: 0.68rem; color: var(--ink-muted); margin-bottom: 0.15rem; }
   .card-concern { font-size: 0.82rem; color: var(--ink-light); background: var(--gold-light); padding: 0.7rem 0.9rem; margin-bottom: 0.9rem; }
-  .card-actions { display: flex; gap: 0.6rem; }
+  .card-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
   .card-btn { font-size: 0.75rem; border: 0.5px solid var(--border); background: none; padding: 0.4rem 0.9rem; cursor: pointer; font-family: var(--sans); color: var(--ink-light); }
   .card-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .card-btn.primary { border-color: var(--sage); color: var(--sage); }
   .saju-panel { margin-top: 1rem; padding-top: 1rem; border-top: 0.5px dashed var(--border); display: none; }
   .saju-panel.show { display: block; }
   .pillars { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); margin-bottom: 1rem; }
@@ -58,6 +78,49 @@
   .elements { display: flex; gap: 0.4rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
   .el-chip { flex: 1; min-width: 50px; background: var(--sage-light); text-align: center; padding: 0.6rem 0.3rem; font-size: 0.85rem; color: #4a5a49; font-weight: 700; }
   .interp { font-size: 0.9rem; color: var(--ink); background: var(--gold-light); padding: 0.9rem 1.1rem; line-height: 1.8; font-weight: 500; }
+
+  /* ── 캘린더 ── */
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .cal-nav-btn { background: none; border: 0.5px solid var(--border); font-size: 0.9rem; padding: 0.4rem 0.8rem; cursor: pointer; color: var(--ink-light); }
+  .cal-nav-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .cal-month { font-family: var(--serif); font-size: 1.15rem; }
+  .cal-legend { display: flex; gap: 1.2rem; font-size: 0.78rem; color: var(--ink-light); margin-bottom: 1rem; }
+  .cal-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .cal-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .cal-dot.pending { background: var(--gold); }
+  .cal-dot.confirmed { background: var(--sage); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 1px; background: var(--border); }
+  .cal-wd { background: var(--cream); text-align: center; font-size: 0.72rem; color: var(--ink-muted); padding: 0.5rem 0; }
+  .cal-cell { background: white; min-height: 90px; padding: 0.4rem; }
+  .cal-cell.other-month { background: #FAFAF8; }
+  .cal-date { font-size: 0.75rem; color: var(--ink-muted); margin-bottom: 0.3rem; }
+  .cal-cell.today .cal-date { color: var(--gold); font-weight: 700; }
+  .cal-chip { font-size: 0.65rem; padding: 0.15rem 0.35rem; margin-bottom: 0.2rem; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cal-chip.pending { background: var(--gold-light); color: #8a6a2f; border-left: 2px solid var(--gold); }
+  .cal-chip.confirmed { background: var(--sage-light); color: #3d4a3c; border-left: 2px solid var(--sage); }
+  @media (max-width: 780px) {
+    .cal-cell { min-height: 60px; }
+    .cal-chip { font-size: 0.58rem; }
+  }
+
+  /* ── 모달 ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20,18,14,0.55); display: none; align-items: center; justify-content: center; z-index: 500; padding: 1rem; }
+  .modal-overlay.show { display: flex; }
+  .modal-box { background: var(--cream); padding: 1.8rem; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto; }
+  .modal-box h3 { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; margin-bottom: 1.2rem; }
+  .modal-field { margin-bottom: 1rem; }
+  .modal-field label { display: block; font-size: 0.76rem; color: var(--ink-light); margin-bottom: 0.4rem; }
+  .modal-field input, .modal-field select, .modal-field textarea {
+    width: 100%; background: white; border: 0.5px solid var(--border); padding: 0.65rem 0.8rem;
+    font-family: var(--sans); font-size: 0.86rem; color: var(--ink); outline: none; border-radius: 0;
+  }
+  .modal-field textarea { min-height: 70px; resize: vertical; }
+  .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .modal-actions { display: flex; gap: 0.6rem; margin-top: 1.4rem; }
+  .modal-btn { flex: 1; padding: 0.75rem; font-family: var(--sans); font-size: 0.85rem; border: none; cursor: pointer; }
+  .modal-btn.confirm { background: var(--ink); color: var(--cream); }
+  .modal-btn.confirm:hover { background: var(--gold); }
+  .modal-btn.cancel { background: none; border: 0.5px solid var(--border); color: var(--ink-light); }
 
   .empty-state { text-align: center; padding: 4rem 1rem; color: var(--ink-muted); font-size: 0.85rem; }
   .setup-warn { max-width: 500px; margin: 4rem auto; text-align: center; font-size: 0.85rem; color: var(--ink-muted); line-height: 2; padding: 0 1.5rem; }
@@ -74,14 +137,86 @@
 </header>
 
 <div class="page" id="page" style="display:none;">
-  <p class="page-title">예약 신청 목록</p>
-  <p class="page-sub">최신 신청 순으로 표시됩니다. 카드 안 '사주 보기'를 누르면 바로 계산됩니다.</p>
-  <div id="list"></div>
+  <div class="sidebar">
+    <button class="add-appt-btn" onclick="openAddModal()">+ 새 예약 추가</button>
+    <div class="cat-list" id="catList"></div>
+  </div>
+
+  <div class="main">
+    <div class="view-tabs">
+      <button class="view-tab" id="tabList" onclick="setView('list')">목록</button>
+      <button class="view-tab" id="tabCal" onclick="setView('calendar')">캘린더</button>
+    </div>
+
+    <div id="listView">
+      <p class="page-title">예약 신청 목록</p>
+      <p class="page-sub">최신 신청 순으로 표시됩니다. '사주 보기'를 누르면 바로 계산됩니다.</p>
+      <div id="list"></div>
+    </div>
+
+    <div id="calView" style="display:none;">
+      <div class="cal-head">
+        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+        <p class="cal-month" id="calMonthLabel"></p>
+        <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-legend">
+        <span><span class="cal-dot pending"></span>예약 신청</span>
+        <span><span class="cal-dot confirmed"></span>예약 확정</span>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+  </div>
 </div>
 
 <div class="setup-warn" id="setupWarn" style="display:none;">
   Firebase가 아직 설정되지 않았습니다.<br>
   assets/js/firebase-config.js 에 실제 프로젝트 값을 채워주세요.
+</div>
+
+<!-- 예약 확정 모달 -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <h3>예약 확정</h3>
+    <p style="font-size:0.82rem;color:var(--ink-muted);margin-bottom:1rem;" id="confirmModalWho"></p>
+    <div class="modal-row">
+      <div class="modal-field"><label>확정 날짜</label><input type="date" id="cf_date"></div>
+      <div class="modal-field"><label>확정 시간</label><input type="time" id="cf_time"></div>
+    </div>
+    <div class="modal-field"><label>메모 (선택)</label><textarea id="cf_note" placeholder="상담 관련 메모"></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeConfirmModal()">취소</button>
+      <button class="modal-btn confirm" onclick="submitConfirm()">확정하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 새 예약 추가 모달 -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal-box">
+    <h3>새 예약 직접 추가</h3>
+    <div class="modal-field"><label>이름</label><input type="text" id="ad_name" placeholder="고객 성함"></div>
+    <div class="modal-field"><label>연락처</label><input type="tel" id="ad_phone" placeholder="010-0000-0000"></div>
+    <div class="modal-field">
+      <label>상담 프로그램</label>
+      <select id="ad_program">
+        <option>기본 상담 (60분)</option>
+        <option>심화 상담</option>
+        <option>VIP 프라이빗 상담</option>
+        <option>그룹 프로그램</option>
+        <option>풍수 인테리어 (양택)</option>
+      </select>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field"><label>날짜</label><input type="date" id="ad_date"></div>
+      <div class="modal-field"><label>시간</label><input type="time" id="ad_time"></div>
+    </div>
+    <div class="modal-field"><label>메모 (선택)</label><textarea id="ad_note" placeholder="상담 관련 메모"></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeAddModal()">취소</button>
+      <button class="modal-btn confirm" onclick="submitAdd()">추가하기</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -150,6 +285,37 @@ function renderSaju(pillars) {
   return `<div class="pillars">${pillarsHtml}</div><div class="elements">${elHtml}</div><div class="interp">${interp}</div>`;
 }
 
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const BIRTH_TIME_TO_ZHI = {
+  '자시(23:00~00:59)':0, '축시(01:00~02:59)':1, '인시(03:00~04:59)':2, '묘시(05:00~06:59)':3,
+  '진시(07:00~08:59)':4, '사시(09:00~10:59)':5, '오시(11:00~12:59)':6, '미시(13:00~14:59)':7,
+  '신시(15:00~16:59)':8, '유시(17:00~18:59)':9, '술시(19:00~20:59)':10, '해시(21:00~22:59)':11
+};
+
+/* ══ 상담 카테고리 ══ */
+const PROGRAMS = ['기본 상담 (60분)', '심화 상담', 'VIP 프라이빗 상담', '그룹 프로그램', '풍수 인테리어 (양택)'];
+function shortProgram(p) {
+  if (!p) return '상담';
+  if (p.startsWith('기본')) return '기본';
+  if (p.startsWith('심화')) return '심화';
+  if (p.startsWith('VIP')) return 'VIP';
+  if (p.startsWith('그룹')) return '그룹';
+  if (p.startsWith('풍수')) return '풍수';
+  return p;
+}
+
+/* ══ 상태 ══ */
+const state = {
+  reservations: [],
+  appointments: [],
+  filterProgram: null,
+  view: 'list',
+  calDate: new Date(),
+};
+
 /* ══ Firebase 인증 + 데이터 ══ */
 const ADMIN_EMAIL = 'a01020581925@gmail.com';
 
@@ -158,8 +324,10 @@ if (!FIREBASE_READY) {
 } else {
   firebase.auth().onAuthStateChanged((user) => {
     if (!user || user.email !== ADMIN_EMAIL) { window.location.href = 'admin-login.html'; return; }
-    document.getElementById('page').style.display = 'block';
+    document.getElementById('page').style.display = 'grid';
+    setView('list');
     loadReservations();
+    loadAppointments();
   });
 }
 
@@ -170,24 +338,77 @@ function logout() {
 function loadReservations() {
   firebase.firestore().collection('reservations').orderBy('createdAt', 'desc')
     .onSnapshot((snap) => {
-      const list = document.getElementById('list');
-      if (snap.empty) {
-        list.innerHTML = '<div class="empty-state">아직 접수된 예약이 없습니다.</div>';
-        return;
-      }
-      list.innerHTML = snap.docs.map(doc => renderCard(doc.id, doc.data())).join('');
+      state.reservations = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderSidebar();
+      renderList();
+      if (state.view === 'calendar') renderCalendar();
     }, (err) => {
       console.error(err);
       document.getElementById('list').innerHTML = '<div class="empty-state">목록을 불러오지 못했습니다. Firestore 보안 규칙을 확인해주세요.</div>';
     });
 }
 
+function loadAppointments() {
+  firebase.firestore().collection('appointments').orderBy('date', 'asc')
+    .onSnapshot((snap) => {
+      state.appointments = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      if (state.view === 'calendar') renderCalendar();
+    }, (err) => console.error(err));
+}
+
+/* ══ 뷰 전환 ══ */
+function setView(v) {
+  state.view = v;
+  document.getElementById('tabList').classList.toggle('active', v === 'list');
+  document.getElementById('tabCal').classList.toggle('active', v === 'calendar');
+  document.getElementById('listView').style.display = v === 'list' ? 'block' : 'none';
+  document.getElementById('calView').style.display = v === 'calendar' ? 'block' : 'none';
+  if (v === 'calendar') renderCalendar();
+}
+
+/* ══ 사이드바 ══ */
+function renderSidebar() {
+  const counts = {};
+  PROGRAMS.forEach(p => counts[p] = 0);
+  state.reservations.forEach(r => { if (counts.hasOwnProperty(r.program)) counts[r.program]++; });
+  const total = state.reservations.length;
+
+  const el = document.getElementById('catList');
+  let html = `<button class="cat-item ${state.filterProgram===null?'active':''}" onclick="setFilter(null)"><span>전체</span><span class="cat-count">${total}</span></button>`;
+  PROGRAMS.forEach(p => {
+    html += `<button class="cat-item ${state.filterProgram===p?'active':''}" onclick="setFilter('${p.replace(/'/g,"\\'")}')"><span>${shortProgram(p)}</span><span class="cat-count">${counts[p]}</span></button>`;
+  });
+  el.innerHTML = html;
+}
+
+function setFilter(program) {
+  state.filterProgram = program;
+  renderSidebar();
+  renderList();
+}
+
+/* ══ 목록 뷰 ══ */
+function renderList() {
+  const list = document.getElementById('list');
+  const filtered = state.filterProgram ? state.reservations.filter(r => r.program === state.filterProgram) : state.reservations;
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty-state">해당 카테고리에 예약이 없습니다.</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(r => renderCard(r.id, r)).join('');
+}
+
 function renderCard(id, r) {
   const time = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate().toLocaleString('ko-KR') : '(전송 중)';
   const isDone = r.status === 'done';
+  const isConfirmed = r.status === 'confirmed';
   return `<div class="card ${isDone?'done':''}" id="card-${id}">
     <div class="card-top">
-      <div><span class="card-name">${escapeHtml(r.name||'이름 없음')}</span><span class="badge ${isDone?'done':''}">${isDone?'완료':r.program||'상담'}</span></div>
+      <div>
+        <span class="card-name">${escapeHtml(r.name||'이름 없음')}</span>
+        <span class="badge ${isDone?'done':''}">${isDone?'완료':escapeHtml(r.program||'상담')}</span>
+        ${isConfirmed ? '<span class="badge confirmed">확정됨</span>' : ''}
+      </div>
       <span class="card-time">${time}</span>
     </div>
     <div class="card-grid">
@@ -202,22 +423,13 @@ function renderCard(id, r) {
     </div>
     ${r.concern ? `<div class="card-concern">${escapeHtml(r.concern)}</div>` : ''}
     <div class="card-actions">
+      <button class="card-btn primary" onclick="openConfirmModal('${id}')">${isConfirmed ? '확정 일정 수정' : '예약 확정'}</button>
       <button class="card-btn" onclick="toggleSaju('${id}','${r.birth_date||''}','${r.birth_time||''}')">사주 보기</button>
       <button class="card-btn" onclick="toggleDone('${id}', ${!isDone})">${isDone ? '완료 취소' : '완료 처리'}</button>
     </div>
     <div class="saju-panel" id="saju-${id}"></div>
   </div>`;
 }
-
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-const BIRTH_TIME_TO_ZHI = {
-  '자시(23:00~00:59)':0, '축시(01:00~02:59)':1, '인시(03:00~04:59)':2, '묘시(05:00~06:59)':3,
-  '진시(07:00~08:59)':4, '사시(09:00~10:59)':5, '오시(11:00~12:59)':6, '미시(13:00~14:59)':7,
-  '신시(15:00~16:59)':8, '유시(17:00~18:59)':9, '술시(19:00~20:59)':10, '해시(21:00~22:59)':11
-};
 
 function toggleSaju(id, birthDate, birthTime) {
   const panel = document.getElementById('saju-' + id);
@@ -232,6 +444,137 @@ function toggleSaju(id, birthDate, birthTime) {
 
 function toggleDone(id, done) {
   firebase.firestore().collection('reservations').doc(id).update({ status: done ? 'done' : 'new' });
+}
+
+/* ══ 예약 확정 모달 ══ */
+let confirmTargetId = null;
+function openConfirmModal(reservationId) {
+  const r = state.reservations.find(x => x.id === reservationId);
+  if (!r) return;
+  confirmTargetId = reservationId;
+  document.getElementById('confirmModalWho').textContent = `${r.name || '이름 없음'} · ${r.program || '상담'}`;
+  const existing = state.appointments.find(a => a.reservationId === reservationId);
+  document.getElementById('cf_date').value = existing ? existing.date : (r.pref_date1 || '');
+  document.getElementById('cf_time').value = existing ? existing.time : '';
+  document.getElementById('cf_note').value = existing ? (existing.note || '') : '';
+  document.getElementById('confirmModal').classList.add('show');
+}
+function closeConfirmModal() {
+  document.getElementById('confirmModal').classList.remove('show');
+  confirmTargetId = null;
+}
+function submitConfirm() {
+  const date = document.getElementById('cf_date').value;
+  const time = document.getElementById('cf_time').value;
+  if (!date || !time) { alert('날짜와 시간을 모두 입력해주세요.'); return; }
+  const r = state.reservations.find(x => x.id === confirmTargetId);
+  const note = document.getElementById('cf_note').value;
+  const db = firebase.firestore();
+  const existing = state.appointments.find(a => a.reservationId === confirmTargetId);
+  const data = {
+    reservationId: confirmTargetId,
+    name: r ? r.name : '',
+    phone: r ? r.phone : '',
+    program: r ? r.program : '',
+    date, time, note,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  const save = existing
+    ? db.collection('appointments').doc(existing.id).update(data)
+    : db.collection('appointments').add(data);
+  save.then(() => {
+    db.collection('reservations').doc(confirmTargetId).update({ status: 'confirmed' });
+    closeConfirmModal();
+  }).catch(err => { console.error(err); alert('저장에 실패했습니다.'); });
+}
+
+/* ══ 새 예약 직접 추가 모달 ══ */
+function openAddModal() {
+  ['ad_name','ad_phone','ad_date','ad_time','ad_note'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('addModal').classList.add('show');
+}
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('show');
+}
+function submitAdd() {
+  const name = document.getElementById('ad_name').value;
+  const date = document.getElementById('ad_date').value;
+  const time = document.getElementById('ad_time').value;
+  if (!name || !date || !time) { alert('이름, 날짜, 시간은 필수입니다.'); return; }
+  const data = {
+    reservationId: null,
+    name,
+    phone: document.getElementById('ad_phone').value,
+    program: document.getElementById('ad_program').value,
+    date, time,
+    note: document.getElementById('ad_note').value,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  firebase.firestore().collection('appointments').add(data)
+    .then(() => closeAddModal())
+    .catch(err => { console.error(err); alert('저장에 실패했습니다.'); });
+}
+
+function cancelAppointment(apptId, reservationId) {
+  if (!confirm('이 확정 일정을 취소할까요?')) return;
+  const db = firebase.firestore();
+  db.collection('appointments').doc(apptId).delete().then(() => {
+    if (reservationId) db.collection('reservations').doc(reservationId).update({ status: 'new' });
+  });
+}
+
+/* ══ 캘린더 ══ */
+function pad2(n) { return String(n).padStart(2, '0'); }
+function dateKey(y, m, d) { return `${y}-${pad2(m+1)}-${pad2(d)}`; }
+
+function changeMonth(delta) {
+  state.calDate.setMonth(state.calDate.getMonth() + delta);
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const y = state.calDate.getFullYear();
+  const m = state.calDate.getMonth();
+  document.getElementById('calMonthLabel').textContent = `${y}년 ${m+1}월`;
+
+  const firstDay = new Date(y, m, 1);
+  const startOffset = firstDay.getDay();
+  const gridStart = new Date(y, m, 1 - startOffset);
+  const todayKey = dateKey(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+
+  const pendingByDate = {};
+  state.reservations.forEach(r => {
+    if (r.status === 'confirmed' || r.status === 'done') return;
+    if (!r.pref_date1) return;
+    (pendingByDate[r.pref_date1] = pendingByDate[r.pref_date1] || []).push(r);
+  });
+  const confirmedByDate = {};
+  state.appointments.forEach(a => {
+    if (!a.date) return;
+    (confirmedByDate[a.date] = confirmedByDate[a.date] || []).push(a);
+  });
+
+  const weekdays = ['일','월','화','수','목','금','토'];
+  let html = weekdays.map(w => `<div class="cal-wd">${w}</div>`).join('');
+
+  for (let i = 0; i < 42; i++) {
+    const cellDate = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i);
+    const key = dateKey(cellDate.getFullYear(), cellDate.getMonth(), cellDate.getDate());
+    const isOtherMonth = cellDate.getMonth() !== m;
+    const isToday = key === todayKey;
+    let chips = '';
+    (pendingByDate[key] || []).forEach(r => {
+      chips += `<div class="cal-chip pending" onclick="openConfirmModal('${r.id}')" title="${escapeHtml(r.name||'')} · ${escapeHtml(r.program||'')}">${escapeHtml(r.name||'신청')}</div>`;
+    });
+    (confirmedByDate[key] || []).forEach(a => {
+      chips += `<div class="cal-chip confirmed" onclick="cancelAppointment('${a.id}', ${a.reservationId ? `'${a.reservationId}'` : 'null'})" title="${escapeHtml(a.name||'')} · ${a.time||''} (클릭하여 취소)">${a.time||''} ${escapeHtml(a.name||'확정')}</div>`;
+    });
+    html += `<div class="cal-cell ${isOtherMonth?'other-month':''} ${isToday?'today':''}">
+      <div class="cal-date">${cellDate.getDate()}</div>
+      ${chips}
+    </div>`;
+  }
+  document.getElementById('calGrid').innerHTML = html;
 }
 
 /* ══ 푸시 알림 등록 (FCM) ══ */
