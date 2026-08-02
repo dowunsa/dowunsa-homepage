@@ -1,7 +1,0 @@
-1. github 
-- 아이디 : dowunsa
-- 저장소 : https://github.com/dowunsa/dowunsa-homepage
-
-2. firebase 
-- 프로젝트 ID : 
-dowunsa
