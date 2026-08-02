@@ -151,11 +151,13 @@ function renderSaju(pillars) {
 }
 
 /* ══ Firebase 인증 + 데이터 ══ */
+const ADMIN_EMAIL = 'a01020581925@gmail.com';
+
 if (!FIREBASE_READY) {
   document.getElementById('setupWarn').style.display = 'block';
 } else {
   firebase.auth().onAuthStateChanged((user) => {
-    if (!user) { window.location.href = 'admin-login.html'; return; }
+    if (!user || user.email !== ADMIN_EMAIL) { window.location.href = 'admin-login.html'; return; }
     document.getElementById('page').style.display = 'block';
     loadReservations();
   });
