@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>도운사 유튜브 채널 기획서</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F4EF;
+    --ink: #1E1C18;
+    --ink-light: #4A4740;
+    --ink-muted: #8A877F;
+    --gold: #B8975A;
+    --gold-light: #F0E8D8;
+    --sage: #6B7B6A;
+    --sage-light: #E8EDE6;
+    --border: rgba(30,28,24,0.1);
+    --serif: 'Noto Serif KR', serif;
+    --sans: 'Noto Sans KR', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.9;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 4rem 2rem 6rem;
+  }
+  .doc-header { border-bottom: 0.5px solid var(--gold); padding-bottom: 2rem; margin-bottom: 3.5rem; }
+  .doc-tag { font-size: 0.7rem; letter-spacing: 0.2em; color: var(--ink-muted); margin-bottom: 1rem; }
+  h1 { font-family: var(--serif); font-size: 1.8rem; font-weight: 300; color: var(--ink); margin-bottom: 0.5rem; }
+  .doc-sub { font-size: 0.88rem; color: var(--ink-muted); }
+  h2 {
+    font-family: var(--serif); font-size: 1.2rem; font-weight: 400; color: var(--ink);
+    margin: 3rem 0 1.2rem; display: flex; align-items: center; gap: 0.8rem;
+  }
+  h2::before { content: ''; display: block; width: 1.8rem; height: 0.5px; background: var(--gold); flex-shrink: 0; }
+  h3 { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.12em; color: var(--gold); margin: 2rem 0 0.8rem; text-transform: uppercase; }
+  p { font-size: 0.92rem; color: var(--ink-light); margin-bottom: 0.8rem; line-height: 1.85; }
+  .info-box {
+    background: var(--sage-light);
+    border: 0.5px solid rgba(107,123,106,0.25);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.88rem;
+    color: var(--ink-light);
+    line-height: 1.8;
+  }
+  .divider { border: none; border-top: 0.5px solid var(--border); margin: 3rem 0; }
+  .video-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+  .video-card {
+    background: white;
+    border: 0.5px solid var(--border);
+    padding: 1.3rem 1.4rem;
+  }
+  .video-num {
+    font-size: 0.65rem; letter-spacing: 0.18em; color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+  .video-title {
+    font-family: var(--serif); font-size: 0.95rem; font-weight: 400;
+    color: var(--ink); margin-bottom: 0.6rem; line-height: 1.5;
+  }
+  .video-desc { font-size: 0.78rem; color: var(--ink-muted); line-height: 1.8; margin-bottom: 0.8rem; }
+  .video-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .vtag {
+    font-size: 0.65rem; letter-spacing: 0.05em; background: var(--gold-light);
+    color: #7A6035; padding: 0.2rem 0.5rem;
+  }
+  .video-card.mood { border-left: 2px solid var(--sage); }
+  .video-card.story { border-left: 2px solid var(--gold); }
+  .video-card.edu { border-left: 2px solid #8A877F; }
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0 2rem; }
+  th { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); font-weight: 400; text-align: left; padding: 0.7rem 1rem; border-bottom: 0.5px solid var(--border); }
+  td { font-size: 0.85rem; color: var(--ink-light); padding: 0.8rem 1rem; border-bottom: 0.5px solid rgba(30,28,24,0.06); vertical-align: top; line-height: 1.7; }
+  td:first-child { color: var(--ink); font-weight: 400; white-space: nowrap; }
+  .timeline { display: flex; flex-direction: column; gap: 0; margin: 1.5rem 0; }
+  .timeline-item {
+    display: grid; grid-template-columns: 5rem 1fr;
+    border-bottom: 0.5px solid var(--border); padding: 1.2rem 0;
+  }
+  .timeline-month { font-size: 0.75rem; letter-spacing: 0.12em; color: var(--gold); font-weight: 500; padding-right: 1rem; }
+  .timeline-content { font-size: 0.88rem; color: var(--ink-light); line-height: 1.8; }
+  .timeline-content strong { color: var(--ink); font-weight: 500; display: block; margin-bottom: 0.3rem; }
+  .thumbnail-box {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 1.5rem;
+    margin: 0.8rem 0 0.5rem;
+    aspect-ratio: 16/9;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    position: relative;
+    overflow: hidden;
+  }
+  .thumbnail-bg {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(160deg, #2E2B25 0%, #1E1C18 100%);
+    opacity: 0.95;
+  }
+  .thumbnail-deco {
+    position: absolute; top: 1rem; right: 1.5rem;
+    font-family: var(--serif); font-size: 4rem; font-weight: 300;
+    color: rgba(184,151,90,0.15); line-height: 1;
+  }
+  .thumbnail-label {
+    position: relative; z-index: 1;
+    font-size: 0.65rem; letter-spacing: 0.18em; color: var(--gold); margin-bottom: 0.5rem;
+  }
+  .thumbnail-title {
+    position: relative; z-index: 1;
+    font-family: var(--serif); font-size: 1.15rem; font-weight: 300;
+    color: var(--cream); line-height: 1.5;
+  }
+  .thumbnail-sub {
+    position: relative; z-index: 1;
+    font-size: 0.72rem; color: rgba(247,244,239,0.45); margin-top: 0.5rem;
+  }
+  .thumbnail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+</style>
+</head>
+<body>
+
+<div class="doc-header">
+  <p class="doc-tag">YOUTUBE CHANNEL PLAN · DOWUNSA · 2025</p>
+  <h1>도운사 유튜브 채널 기획서</h1>
+  <p class="doc-sub">채널 방향 · 콘텐츠 유형 · 첫 10개 영상 기획 · 썸네일 컨셉</p>
+</div>
+
+<div class="info-box">
+  <strong style="color:var(--ink); font-weight:500; display:block; margin-bottom:0.5rem;">채널 방향 한 줄 요약</strong>
+  들어오면 나가기 싫어지는 채널 — 고요하고 따뜻하며, 무겁지 않은 영적 라이프스타일 채널
+</div>
+
+<h2>채널 기본 정보</h2>
+<table>
+  <tbody>
+    <tr><td>채널명</td><td>도운사 — 당신의 자리 (또는 "도운사 Dowunsa")</td></tr>
+    <tr><td>채널 소개</td><td>삶의 방향, 관계, 공간, 내면의 이야기를 나눕니다. 무겁지 않게, 그렇다고 가볍지도 않게.</td></tr>
+    <tr><td>업로드 주기</td><td>처음 3개월은 격주 1회 (월 2편). 안정되면 주 1회.</td></tr>
+    <tr><td>영상 길이</td><td>5~12분 (너무 짧으면 깊이 없고, 너무 길면 이탈)</td></tr>
+    <tr><td>톤</td><td>조용하고 차분한 목소리 · 배경음악 미니멀 · 자연광 · 원목 공간</td></tr>
+    <tr><td>편집 스타일</td><td>자막 필수 · 컷 편집 최소화 · 여백 있는 호흡</td></tr>
+  </tbody>
+</table>
+
+<hr class="divider">
+
+<h2>콘텐츠 3대 유형</h2>
+<p>영상을 3가지 유형으로 나눠 번갈아 발행하면 구독자가 다양한 이유로 채널에 머뭅니다.</p>
+
+<div class="video-grid">
+  <div class="video-card mood">
+    <p class="video-num">TYPE A</p>
+    <p class="video-title" style="font-size:1.05rem;">무드 & 공간 영상</p>
+    <p class="video-desc">도운사 공간 소개, 일상 브이로그, 계절 감성 영상. 얼굴을 드러내기 부담스러울 때 먼저 시작하기 좋습니다. 조회수보다 체류 시간과 구독으로 이어집니다.</p>
+    <div class="video-tags">
+      <span class="vtag">공간</span><span class="vtag">브이로그</span><span class="vtag">ASMR</span>
+    </div>
+  </div>
+  <div class="video-card story">
+    <p class="video-num">TYPE B</p>
+    <p class="video-title" style="font-size:1.05rem;">이야기 & 인사이트</p>
+    <p class="video-desc">상담하며 느낀 것들, 삶의 방향에 관한 생각, 관계 이야기. 직접 카메라 앞에 앉아서 이야기하는 형식. 신뢰를 만드는 핵심 콘텐츠.</p>
+    <div class="video-tags">
+      <span class="vtag">토크</span><span class="vtag">에세이</span><span class="vtag">인사이트</span>
+    </div>
+  </div>
+  <div class="video-card edu">
+    <p class="video-num">TYPE C</p>
+    <p class="video-title" style="font-size:1.05rem;">교육 & 정보</p>
+    <p class="video-desc">풍수 기초, 공간의 기운 이야기, 상담에 관한 정보. 검색 유입이 가장 많이 일어나는 유형. 조회수와 신규 구독으로 이어집니다.</p>
+    <div class="video-tags">
+      <span class="vtag">풍수</span><span class="vtag">정보</span><span class="vtag">교육</span>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<h2>첫 10개 영상 기획</h2>
+<div class="video-grid">
+  <div class="video-card mood">
+    <p class="video-num">EP.01 · TYPE A</p>
+    <p class="video-title">도운사를 소개합니다 — 이런 공간을 만들었습니다</p>
+    <p class="video-desc">채널 첫 영상. 공간 투어 + 짧은 인사. 부담 없이 시작.</p>
+  </div>
+  <div class="video-card story">
+    <p class="video-num">EP.02 · TYPE B</p>
+    <p class="video-title">상담을 받는다는 것 — 용기가 필요한 이유</p>
+    <p class="video-desc">상담에 대한 막연한 두려움을 다루는 이야기. 공감 유입.</p>
+  </div>
+  <div class="video-card edu">
+    <p class="video-num">EP.03 · TYPE C</p>
+    <p class="video-title">집의 기운이 나쁠 때 나타나는 3가지 신호</p>
+    <p class="video-desc">풍수 입문 정보. 검색 유입 기대. 제목이 곧 클릭.</p>
+  </div>
+  <div class="video-card mood">
+    <p class="video-num">EP.04 · TYPE A</p>
+    <p class="video-title">비 오는 날의 도운사 — 고요한 공간 영상</p>
+    <p class="video-desc">ASMR 감성. 비 소리 + 공간. 체류 시간 올리는 영상.</p>
+  </div>
+  <div class="video-card story">
+    <p class="video-num">EP.05 · TYPE B</p>
+    <p class="video-title">40대에 삶의 방향을 다시 잡는다는 것</p>
+    <p class="video-desc">중년 여성 타겟. 그룹 프로그램 유입 연결.</p>
+  </div>
+  <div class="video-card edu">
+    <p class="video-num">EP.06 · TYPE C</p>
+    <p class="video-title">현관이 곧 운입니다 — 풍수 인테리어 기초</p>
+    <p class="video-desc">실용적 풍수 정보. 풍수 인테리어 서비스 연결.</p>
+  </div>
+  <div class="video-card story">
+    <p class="video-num">EP.07 · TYPE B</p>
+    <p class="video-title">사업이 잘 안 될 때, 저는 이 세 가지를 봅니다</p>
+    <p class="video-desc">사업가 타겟. VIP 상담 유입 연결.</p>
+  </div>
+  <div class="video-card mood">
+    <p class="video-num">EP.08 · TYPE A</p>
+    <p class="video-title">상담 준비하는 아침 — 선향을 피우며</p>
+    <p class="video-desc">브이로그. 일상의 의식 감성. 브랜드 세계관 구축.</p>
+  </div>
+  <div class="video-card edu">
+    <p class="video-num">EP.09 · TYPE C</p>
+    <p class="video-title">무속 상담 vs 심리 상담 — 뭐가 다른가요?</p>
+    <p class="video-desc">자주 묻는 질문 영상. 신규 유입 & 신뢰 구축.</p>
+  </div>
+  <div class="video-card story">
+    <p class="video-num">EP.10 · TYPE B</p>
+    <p class="video-title">상담 1년, 제가 가장 많이 들은 말</p>
+    <p class="video-desc">공감 에세이. 도운사를 더 깊이 이해하는 영상.</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<h2>썸네일 컨셉</h2>
+<p>도운사 썸네일은 <strong style="font-weight:500; color:var(--ink);">어둡고 고요한 배경 + 세리프 한국어 타이틀</strong> 스타일로 통일합니다. 유튜브 목록에서 확연히 다른 느낌을 줍니다.</p>
+
+<div class="thumbnail-grid">
+  <div>
+    <div class="thumbnail-box">
+      <div class="thumbnail-bg"></div>
+      <div class="thumbnail-deco">運</div>
+      <p class="thumbnail-label">도운사</p>
+      <p class="thumbnail-title">집의 기운이 나쁠 때<br>나타나는 3가지 신호</p>
+      <p class="thumbnail-sub">dowunsa.kr</p>
+    </div>
+    <p style="font-size:0.75rem; color:var(--ink-muted);">교육 콘텐츠 썸네일 예시</p>
+  </div>
+  <div>
+    <div class="thumbnail-box" style="background: #1A2018;">
+      <div class="thumbnail-bg" style="background: linear-gradient(160deg, #1F281D 0%, #121810 100%);"></div>
+      <div class="thumbnail-deco" style="color:rgba(107,123,106,0.2);">靜</div>
+      <p class="thumbnail-label">도운사</p>
+      <p class="thumbnail-title">상담을 받는다는 것<br>용기가 필요한 이유</p>
+      <p class="thumbnail-sub">dowunsa.kr</p>
+    </div>
+    <p style="font-size:0.75rem; color:var(--ink-muted);">이야기 콘텐츠 썸네일 예시</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<h2>월별 발행 로드맵</h2>
+<div class="timeline">
+  <div class="timeline-item">
+    <span class="timeline-month">1개월차</span>
+    <div class="timeline-content">
+      <strong>채널 개설 & 기반 구축</strong>
+      EP.01 공간 소개 · EP.02 상담 이야기 발행. 채널 아트 세팅, 링크 bio에 dowunsa.kr 연결.
+    </div>
+  </div>
+  <div class="timeline-item">
+    <span class="timeline-month">2개월차</span>
+    <div class="timeline-content">
+      <strong>교육 콘텐츠로 검색 유입 시작</strong>
+      EP.03 풍수 정보 · EP.04 분위기 영상 발행. 네이버 블로그와 교차 홍보 시작.
+    </div>
+  </div>
+  <div class="timeline-item">
+    <span class="timeline-month">3개월차</span>
+    <div class="timeline-content">
+      <strong>타겟 콘텐츠 강화</strong>
+      EP.05~06 발행. 중년 여성 타겟 + 풍수 서비스 연결 영상. 인스타그램 숏폼 클립 시작.
+    </div>
+  </div>
+  <div class="timeline-item">
+    <span class="timeline-month">4~6개월차</span>
+    <div class="timeline-content">
+      <strong>주 1회 발행 도전</strong>
+      EP.07~10 및 이후 영상. 구독자 반응 보고 인기 유형 집중. 첫 그룹 프로그램 모집 영상 추가.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

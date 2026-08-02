@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 로그인 — 도운사</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/images/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="assets/js/firebase-config.js"></script>
+<style>
+  :root {
+    --cream: #F7F4EF; --ink: #1E1C18; --ink-light: #4A4740; --ink-muted: #8A877F;
+    --gold: #B8975A; --border: rgba(30,28,24,0.12);
+    --serif: 'Noto Serif KR', serif; --sans: 'Noto Sans KR', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--ink); color: var(--cream); font-family: var(--sans); font-weight: 300; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .box { width: 100%; max-width: 360px; padding: 2rem 1.5rem; }
+  .logo { font-family: var(--serif); font-size: 1.3rem; text-align: center; margin-bottom: 0.4rem; color: var(--gold); }
+  .sub { font-size: 0.78rem; color: rgba(247,244,239,0.5); text-align: center; margin-bottom: 2.5rem; }
+  .field { margin-bottom: 1.2rem; }
+  label { display: block; font-size: 0.78rem; color: rgba(247,244,239,0.6); margin-bottom: 0.5rem; }
+  input {
+    width: 100%; background: rgba(247,244,239,0.06); border: 0.5px solid rgba(247,244,239,0.2);
+    padding: 0.8rem 1rem; font-family: var(--sans); font-size: 0.9rem; color: var(--cream); outline: none; border-radius: 0;
+  }
+  input:focus { border-color: var(--gold); }
+  .login-btn {
+    width: 100%; background: var(--gold); color: var(--ink); border: none; padding: 0.9rem;
+    font-family: var(--sans); font-size: 0.88rem; letter-spacing: 0.1em; cursor: pointer; margin-top: 0.8rem; transition: opacity 0.3s;
+  }
+  .login-btn:hover { opacity: 0.85; }
+  .error { color: #E08080; font-size: 0.78rem; text-align: center; margin-top: 1rem; display: none; }
+  .error.show { display: block; }
+  .setup-warn { font-size: 0.72rem; color: rgba(247,244,239,0.4); text-align: center; margin-top: 2rem; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="box">
+  <p class="logo">道運寺</p>
+  <p class="sub">관리자 로그인</p>
+  <form id="loginForm">
+    <div class="field">
+      <label for="email">이메일</label>
+      <input type="email" id="email" required autocomplete="username">
+    </div>
+    <div class="field">
+      <label for="pw">비밀번호</label>
+      <input type="password" id="pw" required autocomplete="current-password">
+    </div>
+    <button type="submit" class="login-btn">로그인</button>
+    <p class="error" id="err">이메일 또는 비밀번호가 올바르지 않습니다.</p>
+  </form>
+  <p class="setup-warn" id="setupWarn" style="display:none;">
+    Firebase가 아직 설정되지 않았습니다. assets/js/firebase-config.js 값을 채우고,
+    Firebase 콘솔 &gt; Authentication &gt; 사용자 탭에서 로그인용 계정을 먼저 만들어주세요.
+  </p>
+</div>
+<script>
+  if (!FIREBASE_READY) {
+    document.getElementById('setupWarn').style.display = 'block';
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!FIREBASE_READY) return;
+    const email = document.getElementById('email').value;
+    const pw = document.getElementById('pw').value;
+    const errEl = document.getElementById('err');
+    errEl.classList.remove('show');
+
+    firebase.auth().signInWithEmailAndPassword(email, pw)
+      .then(() => { window.location.href = 'admin-dashboard.html'; })
+      .catch((err) => {
+        console.error(err);
+        errEl.classList.add('show');
+      });
+  });
+
+  // 이미 로그인되어 있으면 바로 대시보드로
+  if (FIREBASE_READY) {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) window.location.href = 'admin-dashboard.html';
+    });
+  }
+</script>
+</body>
+</html>

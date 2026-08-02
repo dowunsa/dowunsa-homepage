@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주 계산기 (관리자용) — 도운사</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/images/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F4EF; --ink: #1E1C18; --ink-light: #4A4740; --ink-muted: #8A877F;
+    --gold: #B8975A; --gold-light: #F0E8D8; --sage: #6B7B6A; --sage-light: #E8EDE6;
+    --border: rgba(30,28,24,0.12);
+    --serif: 'Noto Serif KR', serif; --sans: 'Noto Sans KR', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--cream); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.8; }
+  header { padding: 1.5rem 2rem; border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-family: var(--serif); font-size: 1.05rem; color: var(--ink); text-decoration: none; }
+  .back-link { font-size: 0.8rem; color: var(--ink-muted); text-decoration: none; }
+  .page { max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+  h1 { font-family: var(--serif); font-size: 1.5rem; font-weight: 300; margin-bottom: 1.5rem; }
+  .warn { background: rgba(184,64,64,0.08); border: 0.5px solid rgba(184,64,64,0.3); color: #8a3030; font-size: 0.82rem; padding: 1rem 1.2rem; line-height: 1.8; margin-bottom: 2.5rem; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+  .field label { display: block; font-size: 0.78rem; color: var(--ink-light); margin-bottom: 0.5rem; }
+  input[type="date"], select {
+    width: 100%; background: white; border: 0.5px solid var(--border); padding: 0.75rem 0.9rem;
+    font-family: var(--sans); font-size: 0.9rem; color: var(--ink); outline: none; border-radius: 0;
+  }
+  input[type="date"]:focus, select:focus { border-color: var(--gold); }
+  .calc-btn {
+    background: var(--ink); color: var(--cream); border: none; padding: 0.9rem 2rem;
+    font-family: var(--sans); font-size: 0.88rem; letter-spacing: 0.08em; cursor: pointer; transition: background 0.3s;
+  }
+  .calc-btn:hover { background: var(--gold); }
+  .result { margin-top: 3rem; display: none; }
+  .result.show { display: block; }
+  .pillars { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); margin-bottom: 2rem; }
+  .pillar-col { background: white; display: flex; flex-direction: column; }
+  .pillar-label { font-size: 0.68rem; color: var(--ink-muted); letter-spacing: 0.1em; text-align: center; padding: 0.7rem 0.3rem 0.5rem; border-bottom: 0.5px solid var(--border); }
+  .pillar-cell { padding: 1rem 0.4rem; text-align: center; }
+  .pillar-cell.gan { border-bottom: 0.5px solid var(--border); }
+  .cell-tag { font-size: 0.6rem; color: var(--ink-muted); letter-spacing: 0.1em; margin-bottom: 0.4rem; }
+  .pillar-hanja { font-family: var(--serif); font-size: 1.7rem; color: var(--ink); line-height: 1.3; }
+  .pillar-kr { font-size: 0.7rem; color: var(--gold); margin-top: 0.3rem; }
+  .pillar-col.empty .pillar-hanja { color: var(--ink-muted); font-size: 0.85rem; }
+  @media (max-width: 560px) {
+    .pillars { grid-template-columns: repeat(2,1fr); }
+  }
+  .elements { display: flex; gap: 0.6rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .el-chip { flex: 1; min-width: 60px; background: var(--sage-light); text-align: center; padding: 0.8rem 0.5rem; }
+  .el-name { font-family: var(--serif); font-size: 1rem; color: var(--sage); }
+  .el-count { font-size: 0.75rem; color: var(--ink-muted); margin-top: 0.2rem; }
+  .interp { background: var(--gold-light); border-left: 2px solid var(--gold); padding: 1.2rem 1.4rem; font-size: 0.86rem; color: var(--ink-light); line-height: 1.9; }
+  .note { margin-top: 1.5rem; font-size: 0.75rem; color: var(--ink-muted); line-height: 1.8; }
+</style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="logo">道運寺 도운사 · 관리자</a>
+  <a href="index.html" class="back-link">← 홈으로</a>
+</header>
+
+<div class="page">
+  <h1>사주팔자 참고 계산기</h1>
+
+  <div class="warn">
+    ⚠ 이 도구는 <strong>태양력 절기 날짜의 평균값(근사치)</strong>을 사용한 참고용 계산기입니다.
+    해에 따라 절기 경계가 하루 정도 앞뒤로 달라질 수 있어 실제 만세력과 다를 수 있습니다.
+    실제 상담에 쓰시기 전에 정식 만세력으로 한 번 더 대조해주세요. 태어난 시간이 '모름'이면 시주는 계산하지 않습니다.
+    <br><br>
+    예약 이메일로 받으신 생년월일 · 태어난 시간을 아래에 입력하고 계산하세요. (이 페이지는 검색엔진에 노출되지 않으며, 누구에게도 공유하지 마세요.)
+  </div>
+
+  <div class="form-grid">
+    <div class="field">
+      <label for="birth_date">생년월일</label>
+      <input type="date" id="birth_date">
+    </div>
+    <div class="field">
+      <label for="birth_time">태어난 시간</label>
+      <select id="birth_time">
+        <option value="모름">모름 / 모르겠음</option>
+        <option value="0">자시 (23:00 ~ 00:59)</option>
+        <option value="1">축시 (01:00 ~ 02:59)</option>
+        <option value="2">인시 (03:00 ~ 04:59)</option>
+        <option value="3">묘시 (05:00 ~ 06:59)</option>
+        <option value="4">진시 (07:00 ~ 08:59)</option>
+        <option value="5">사시 (09:00 ~ 10:59)</option>
+        <option value="6">오시 (11:00 ~ 12:59)</option>
+        <option value="7">미시 (13:00 ~ 14:59)</option>
+        <option value="8">신시 (15:00 ~ 16:59)</option>
+        <option value="9">유시 (17:00 ~ 18:59)</option>
+        <option value="10">술시 (19:00 ~ 20:59)</option>
+        <option value="11">해시 (21:00 ~ 22:59)</option>
+      </select>
+    </div>
+  </div>
+
+  <button class="calc-btn" onclick="calcSaju()">사주 계산하기</button>
+
+  <div class="result" id="result">
+    <div class="pillars" id="pillars"></div>
+    <div class="elements" id="elements"></div>
+    <div class="interp" id="interp"></div>
+    <p class="note">참고: 시주가 비어있으면 태어난 시간이 '모름'으로 선택된 경우입니다. 월주는 절기(태양력) 기준 근사치로 계산되었습니다.</p>
+  </div>
+</div>
+
+<script>
+const GAN_KR = ['갑','을','병','정','무','기','경','신','임','계'];
+const GAN_HJ = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const ZHI_KR = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const ZHI_HJ = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const GAN_EL = ['목','목','화','화','토','토','금','금','수','수'];
+const ZHI_EL = ['수','토','목','목','토','화','화','토','금','금','토','수'];
+
+// 절기 근사 경계일 [월, 일, 해당 시작 지지index] — 태양력 기준 평균값
+const CUTOFFS = [
+  {m:1, d:6,  zhi:1},  // 소한 → 축월
+  {m:2, d:4,  zhi:2},  // 입춘 → 인월 (해 경계)
+  {m:3, d:6,  zhi:3},  // 경칩 → 묘월
+  {m:4, d:5,  zhi:4},  // 청명 → 진월
+  {m:5, d:6,  zhi:5},  // 입하 → 사월
+  {m:6, d:6,  zhi:6},  // 망종 → 오월
+  {m:7, d:7,  zhi:7},  // 소서 → 미월
+  {m:8, d:8,  zhi:8},  // 입추 → 신월
+  {m:9, d:8,  zhi:9},  // 백로 → 유월
+  {m:10,d:8,  zhi:10}, // 한로 → 술월
+  {m:11,d:7,  zhi:11}, // 입동 → 해월
+  {m:12,d:7,  zhi:0},  // 대설 → 자월
+];
+
+function toJDN(y, m, d) {
+  const a = Math.floor((14 - m) / 12);
+  const y2 = y + 4800 - a;
+  const m2 = m + 12 * a - 3;
+  return d + Math.floor((153 * m2 + 2) / 5) + 365 * y2 + Math.floor(y2 / 4) - Math.floor(y2 / 100) + Math.floor(y2 / 400) - 32045;
+}
+
+function getYearForPillar(y, m, d) {
+  // 입춘(2/4) 이전 출생은 사주상 전년도로 취급
+  if (m < 2 || (m === 2 && d < 4)) return y - 1;
+  return y;
+}
+
+function getMonthZhi(m, d) {
+  if (m === 1 && d < 6) return 0; // 전년도 자월 연장
+  let best = CUTOFFS[0];
+  for (const c of CUTOFFS) {
+    if (c.m < m || (c.m === m && c.d <= d)) best = c;
+  }
+  return best.zhi;
+}
+
+function mod(n, m) { return ((n % m) + m) % m; }
+
+function calcSaju() {
+  const dateVal = document.getElementById('birth_date').value;
+  if (!dateVal) { alert('생년월일을 입력해주세요.'); return; }
+  const [y, m, d] = dateVal.split('-').map(Number);
+  const timeVal = document.getElementById('birth_time').value;
+  const hourKnown = timeVal !== '모름';
+  const hourZhiIdx = hourKnown ? parseInt(timeVal, 10) : null;
+
+  // 년주
+  const yearForPillar = getYearForPillar(y, m, d);
+  const yearGanIdx = mod(yearForPillar - 4, 10);
+  const yearZhiIdx = mod(yearForPillar - 4, 12);
+
+  // 월주
+  const monthZhiIdx = getMonthZhi(m, d);
+  const monthStartGan = mod(mod(yearGanIdx, 5) * 2 + 2, 10);
+  const monthGanIdx = mod(monthStartGan + mod(monthZhiIdx - 2, 12), 10);
+
+  // 일주
+  const jdn = toJDN(y, m, d);
+  const dayGanIdx = mod(jdn + 9, 10);
+  const dayZhiIdx = mod(jdn + 1, 12);
+
+  // 시주
+  let hourGanIdx = null;
+  if (hourKnown) {
+    const hourStartGan = mod(dayGanIdx, 5) * 2;
+    hourGanIdx = mod(hourStartGan + hourZhiIdx, 10);
+  }
+
+  const pillars = [
+    { label: '년주', gan: yearGanIdx, zhi: yearZhiIdx },
+    { label: '월주', gan: monthGanIdx, zhi: monthZhiIdx },
+    { label: '일주', gan: dayGanIdx, zhi: dayZhiIdx },
+    { label: '시주', gan: hourGanIdx, zhi: hourZhiIdx },
+  ];
+
+  const pillarsEl = document.getElementById('pillars');
+  pillarsEl.innerHTML = pillars.map(p => {
+    if (p.gan === null) {
+      return `<div class="pillar-col empty">
+        <div class="pillar-label">${p.label}</div>
+        <div class="pillar-cell gan"><div class="cell-tag">천간</div><div class="pillar-hanja">모름</div></div>
+        <div class="pillar-cell zhi"><div class="cell-tag">지지</div><div class="pillar-hanja">모름</div></div>
+      </div>`;
+    }
+    return `<div class="pillar-col">
+      <div class="pillar-label">${p.label}</div>
+      <div class="pillar-cell gan">
+        <div class="cell-tag">천간</div>
+        <div class="pillar-hanja">${GAN_HJ[p.gan]}</div>
+        <div class="pillar-kr">${GAN_KR[p.gan]}</div>
+      </div>
+      <div class="pillar-cell zhi">
+        <div class="cell-tag">지지</div>
+        <div class="pillar-hanja">${ZHI_HJ[p.zhi]}</div>
+        <div class="pillar-kr">${ZHI_KR[p.zhi]}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // 오행 집계
+  const elCount = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 };
+  pillars.forEach(p => {
+    if (p.gan === null) return;
+    elCount[GAN_EL[p.gan]]++;
+    elCount[ZHI_EL[p.zhi]]++;
+  });
+
+  const elementsEl = document.getElementById('elements');
+  elementsEl.innerHTML = Object.entries(elCount).map(([el, cnt]) =>
+    `<div class="el-chip"><div class="el-name">${el}</div><div class="el-count">${cnt}개</div></div>`
+  ).join('');
+
+  const sorted = Object.entries(elCount).sort((a, b) => b[1] - a[1]);
+  const strongest = sorted[0];
+  const weakestList = Object.entries(elCount).filter(([,c]) => c === 0).map(([el]) => el);
+
+  const elDesc = {
+    목: '성장·확장·유연함의 기운',
+    화: '열정·표현력·활동성의 기운',
+    토: '중재·안정·신뢰의 기운',
+    금: '결단력·원칙·정리의 기운',
+    수: '지혜·유연함·저장의 기운',
+  };
+
+  let interpText = `여덟 글자 중 <strong>${strongest[0]}(${elDesc[strongest[0]]})</strong> 기운이 가장 두드러집니다 (${strongest[1]}개).`;
+  if (weakestList.length > 0) {
+    interpText += ` ${weakestList.join(', ')} 기운은 사주 원국에 나타나지 않아, 상담 시 보완이 필요한 영역으로 참고하실 수 있습니다.`;
+  }
+  interpText += ' (이 해석은 오행 개수만을 근거로 한 단순 참고용 메모이며, 실제 상담은 명현 대표님의 전문적 판단을 따릅니다.)';
+
+  document.getElementById('interp').innerHTML = interpText;
+  document.getElementById('result').classList.add('show');
+}
+</script>
+</body>
+</html>

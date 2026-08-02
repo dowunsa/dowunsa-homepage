@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>도운사 대표 소개 — 김은정 (명현)</title>
+<meta name="description" content="도운사 대표 김은정(명현)을 소개합니다. 학문과 현장의 경험이 만나는 상담의 배경을 만나보세요.">
+<link rel="icon" type="image/png" href="assets/images/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1E1C18">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#F7F4EF; --ink:#1E1C18; --ink-light:#4A4740; --ink-muted:#8A877F;
+  --gold:#B8975A; --gold-light:#F0E8D8; --sage:#6B7B6A; --sage-light:#E8EDE6;
+  --deep:#14120E; --border:rgba(30,28,24,0.11);
+  --serif:'Noto Serif KR',serif; --sans:'Noto Sans KR',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-weight:300;line-height:1.9;overflow-x:hidden;}
+
+/* ── 음악 시작 오버레이 ── */
+#start-overlay{
+  position:fixed;inset:0;z-index:999;
+  background:rgba(14,12,10,0.96);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;
+  cursor:pointer;
+}
+#start-overlay .so-logo{font-family:var(--serif);font-size:4rem;color:rgba(184,151,90,0.3);animation:breathe 3s ease-in-out infinite;}
+#start-overlay .so-title{font-family:var(--serif);font-size:1.6rem;font-weight:300;color:var(--cream);letter-spacing:0.06em;}
+#start-overlay .so-sub{font-size:0.82rem;color:rgba(247,244,239,0.45);letter-spacing:0.12em;}
+#start-overlay .so-btn{
+  margin-top:1rem;border:0.5px solid var(--gold);color:var(--gold);
+  background:none;padding:0.85rem 2.8rem;font-family:var(--sans);
+  font-size:0.85rem;letter-spacing:0.18em;cursor:pointer;transition:all 0.3s;
+}
+#start-overlay .so-btn:hover{background:var(--gold);color:var(--deep);}
+@keyframes breathe{0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:0.7;transform:scale(1.06);}}
+
+/* ── 음악 플레이어 ── */
+#music-bar{
+  position:fixed;bottom:1.4rem;right:1.4rem;z-index:200;
+  background:rgba(20,18,14,0.95);border:0.5px solid rgba(184,151,90,0.3);
+  backdrop-filter:blur(14px);padding:0.7rem 1rem;
+  display:flex;align-items:center;gap:0.8rem;min-width:210px;
+}
+#music-bar .track-info{flex:1;overflow:hidden;}
+#music-bar .track-name{font-size:0.7rem;color:rgba(247,244,239,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#music-bar .track-sub{font-size:0.62rem;color:rgba(184,151,90,0.65);margin-top:1px;}
+.ctrl-btn{background:none;border:0.5px solid rgba(184,151,90,0.35);width:26px;height:26px;cursor:pointer;color:var(--gold);font-size:0.7rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s;flex-shrink:0;}
+.ctrl-btn:hover{background:rgba(184,151,90,0.15);}
+#vol-sl{width:52px;accent-color:var(--gold);cursor:pointer;}
+.wave-icon{display:flex;align-items:flex-end;gap:2px;height:13px;flex-shrink:0;}
+.wave-icon span{display:block;width:2.5px;background:var(--gold);border-radius:2px;animation:wv 1s ease-in-out infinite;}
+.wave-icon span:nth-child(1){height:4px;animation-delay:0s;}
+.wave-icon span:nth-child(2){height:9px;animation-delay:0.16s;}
+.wave-icon span:nth-child(3){height:13px;animation-delay:0.32s;}
+.wave-icon span:nth-child(4){height:7px;animation-delay:0.48s;}
+.wave-icon span:nth-child(5){height:4px;animation-delay:0.64s;}
+.wave-icon.paused span{animation-play-state:paused;}
+@keyframes wv{0%,100%{transform:scaleY(0.35);}50%{transform:scaleY(1);}}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.2rem 3rem;background:rgba(247,244,239,0.94);backdrop-filter:blur(12px);border-bottom:0.5px solid var(--border);}
+.nav-logo{font-family:var(--serif);font-size:1rem;color:var(--ink);text-decoration:none;}
+.nav-actions{display:flex;align-items:center;gap:0.9rem;}
+.nav-back{font-size:0.75rem;color:var(--ink-muted);text-decoration:none;transition:color 0.3s;}
+.nav-back:hover{color:var(--gold);}
+.nav-cta{font-size:0.75rem;letter-spacing:0.1em;color:var(--gold);border:0.5px solid var(--gold);padding:0.4rem 1.1rem;text-decoration:none;transition:all 0.3s;}
+.nav-cta:hover{background:var(--gold);color:var(--cream);}
+
+/* ── HERO ── */
+.hero{min-height:100vh;padding-top:68px;display:grid;grid-template-columns:1fr 1fr;}
+.hero-left{position:relative;overflow:hidden;background:var(--deep);display:flex;flex-direction:column;justify-content:flex-end;padding:4rem 3.5rem;}
+#hero-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+#hero-bg canvas{width:100%;height:100%;display:block;}
+#hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:0.6;display:none;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(14,12,10,0.92) 0%,rgba(14,12,10,0.1) 65%);}
+.float-k{position:absolute;font-family:var(--serif);font-weight:300;pointer-events:none;color:rgba(184,151,90,0.1);animation:floatK 8s ease-in-out infinite;}
+.float-k:nth-child(1){top:8%;right:9%;font-size:6.5rem;animation-delay:0s;}
+.float-k:nth-child(2){top:40%;right:5%;font-size:3rem;animation-delay:2.5s;}
+.float-k:nth-child(3){bottom:24%;right:13%;font-size:4.5rem;animation-delay:5s;}
+@keyframes floatK{0%,100%{transform:translateY(0);}50%{transform:translateY(-13px);}}
+.hero-info{position:relative;z-index:2;}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;font-size:0.67rem;letter-spacing:0.17em;color:var(--gold);border:0.5px solid rgba(184,151,90,0.38);padding:0.28rem 0.85rem;margin-bottom:1.1rem;}
+.hero-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.35;transform:scale(0.55);}}
+.hero-hanja{font-family:var(--serif);font-size:0.88rem;font-weight:300;color:var(--gold);letter-spacing:0.3em;margin-bottom:0.45rem;}
+.hero-name{font-family:var(--serif);font-size:clamp(2rem,3.8vw,3.2rem);font-weight:300;color:var(--cream);letter-spacing:0.04em;line-height:1.15;margin-bottom:1rem;}
+.hero-tagline{font-size:0.85rem;color:rgba(247,244,239,0.55);line-height:2;max-width:310px;}
+.hero-right{display:flex;flex-direction:column;justify-content:center;padding:5rem 4rem;background:var(--cream);}
+.eyebrow{font-size:0.67rem;letter-spacing:0.22em;color:var(--ink-muted);margin-bottom:1.1rem;display:flex;align-items:center;gap:0.8rem;}
+.eyebrow::before{content:'';display:block;width:2rem;height:0.5px;background:var(--gold);}
+.intro-title{font-family:var(--serif);font-size:clamp(1.4rem,2.5vw,2rem);font-weight:300;color:var(--ink);line-height:1.55;margin-bottom:1.5rem;}
+.intro-body{font-size:0.9rem;color:var(--ink-light);line-height:2;margin-bottom:2rem;}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem;}
+.stat-item{border-top:0.5px solid var(--gold);padding-top:0.9rem;}
+.stat-num{font-family:var(--serif);font-size:1.45rem;font-weight:300;color:var(--ink);line-height:1;margin-bottom:0.3rem;}
+.stat-label{font-size:0.68rem;color:var(--ink-muted);line-height:1.55;}
+
+/* ── 이미지 쇼케이스 (굿/작두/천도) ── */
+.showcase{padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--deep);}
+.showcase-slot{position:relative;aspect-ratio:3/4;overflow:hidden;cursor:pointer;background:#1a1714;}
+.showcase-slot canvas{position:absolute;inset:0;width:100%;height:100%;}
+.showcase-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;opacity:0.75;transition:opacity 0.5s;}
+.showcase-slot:hover img{opacity:1;}
+.showcase-info{position:absolute;bottom:0;left:0;right:0;padding:1.5rem 1.2rem;background:linear-gradient(to top,rgba(14,12,10,0.92),transparent);z-index:5;}
+.showcase-hanja{font-family:var(--serif);font-size:1.8rem;font-weight:300;color:rgba(184,151,90,0.6);line-height:1;margin-bottom:0.5rem;}
+.showcase-name{font-family:var(--serif);font-size:0.95rem;font-weight:400;color:var(--cream);margin-bottom:0.3rem;}
+.showcase-desc{font-size:0.73rem;color:rgba(247,244,239,0.5);line-height:1.7;}
+
+/* ── SECTIONS ── */
+section{padding:5rem 5rem;}
+.sec-label{font-size:0.67rem;letter-spacing:0.22em;color:var(--ink-muted);margin-bottom:0.8rem;display:flex;align-items:center;gap:0.8rem;}
+.sec-label::before{content:'';display:block;width:1.7rem;height:0.5px;background:var(--gold);}
+.sec-title{font-family:var(--serif);font-size:clamp(1.35rem,2.3vw,1.85rem);font-weight:300;color:var(--ink);line-height:1.5;margin-bottom:0.9rem;}
+.sec-desc{font-size:0.89rem;color:var(--ink-light);max-width:500px;line-height:1.9;}
+
+/* ── 학력/경력 ── */
+.academic{background:white;}
+.academic-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:3rem;}
+.ac-col{padding-right:2.5rem;}
+.ac-col:last-child{padding:0 0 0 2.5rem;border-left:0.5px solid var(--border);}
+.ac-col-title{font-size:0.67rem;letter-spacing:0.17em;color:var(--gold);text-transform:uppercase;margin-bottom:1.2rem;font-weight:500;}
+.ac-item{display:grid;grid-template-columns:4rem 1fr;padding:0.9rem 0;border-bottom:0.5px solid var(--border);align-items:start;}
+.ac-item:last-child{border-bottom:none;}
+.ac-year{font-size:0.68rem;color:var(--gold);letter-spacing:0.05em;padding-top:3px;}
+.ac-name{font-size:0.87rem;color:var(--ink);font-weight:400;line-height:1.45;margin-bottom:0.2rem;}
+.ac-detail{font-size:0.73rem;color:var(--ink-muted);line-height:1.6;}
+
+/* ── 경력 타임라인 ── */
+.career{background:var(--deep);padding:5rem 5rem;}
+.career .sec-label{color:rgba(247,244,239,0.3);}
+.career .sec-label::before{background:var(--gold);}
+.career .sec-title{color:var(--cream);}
+.career .sec-desc{color:rgba(247,244,239,0.5);}
+.ct{margin-top:2.5rem;display:flex;flex-direction:column;max-width:580px;}
+.ci{display:grid;grid-template-columns:1.3rem 1fr;gap:1.2rem;padding-bottom:1.6rem;}
+.ci:last-child{padding-bottom:0;}
+.ci-dc{display:flex;flex-direction:column;align-items:center;padding-top:4px;}
+.ci-dot{width:7px;height:7px;border-radius:50%;border:0.5px solid var(--gold);flex-shrink:0;}
+.ci.cur .ci-dot{background:var(--gold);}
+.ci-line{flex:1;width:0.5px;background:rgba(184,151,90,0.18);margin-top:5px;}
+.ci:last-child .ci-line{display:none;}
+.ci-per{font-size:0.67rem;letter-spacing:0.1em;color:var(--gold);margin-bottom:0.2rem;}
+.ci-role{font-family:var(--serif);font-size:0.96rem;font-weight:400;color:var(--cream);margin-bottom:0.18rem;}
+.ci-org{font-size:0.76rem;color:rgba(247,244,239,0.4);line-height:1.6;}
+
+/* ── 철학 ── */
+.philosophy{background:var(--cream);}
+.ph-inner{display:grid;grid-template-columns:1fr 1fr;gap:4.5rem;align-items:center;}
+.quote-block{border-left:1.5px solid var(--gold);padding:1.4rem 1.8rem;background:white;}
+.quote-text{font-family:var(--serif);font-size:1.05rem;font-weight:300;color:var(--ink);line-height:2;margin-bottom:0.9rem;}
+.quote-attr{font-size:0.73rem;color:var(--gold);letter-spacing:0.1em;}
+.pp-list{display:flex;flex-direction:column;gap:1.3rem;}
+.pp{border-top:0.5px solid var(--border);padding-top:1rem;}
+.pp-num{font-size:0.65rem;letter-spacing:0.14em;color:var(--gold);margin-bottom:0.35rem;}
+.pp-title{font-family:var(--serif);font-size:0.95rem;font-weight:400;color:var(--ink);margin-bottom:0.32rem;}
+.pp-desc{font-size:0.78rem;color:var(--ink-muted);line-height:1.8;}
+
+/* ── 갤러리 ── */
+.gallery-sec{background:var(--sage-light);padding:5rem 5rem;}
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:2.2rem;}
+.gs{aspect-ratio:1;background:rgba(107,123,106,0.15);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;border:1px dashed rgba(107,123,106,0.25);}
+.gs img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;}
+.gs-ph{pointer-events:none;text-align:center;}
+.gs-ic{font-size:1.3rem;color:var(--sage);}
+.gs-lb{font-size:0.63rem;color:var(--sage);margin-top:0.25rem;}
+
+/* ── CTA / FOOTER ── */
+.cta-strip{background:var(--gold-light);border-top:0.5px solid rgba(184,151,90,0.28);padding:3.5rem 5rem;display:flex;justify-content:space-between;align-items:center;gap:2rem;}
+.cta-t{font-family:var(--serif);font-size:1.3rem;font-weight:300;color:var(--ink);margin-bottom:0.45rem;}
+.cta-d{font-size:0.82rem;color:var(--ink-light);}
+.btn-dk{font-size:0.8rem;letter-spacing:0.1em;background:var(--ink);color:var(--cream);padding:0.85rem 2rem;text-decoration:none;transition:background 0.3s;white-space:nowrap;flex-shrink:0;}
+.btn-dk:hover{background:var(--gold);}
+footer{padding:2.2rem 5rem;border-top:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.f-logo{font-family:var(--serif);font-size:0.92rem;color:var(--ink);}
+.f-info{font-size:0.71rem;color:var(--ink-muted);text-align:center;line-height:1.8;}
+
+.fi{opacity:0;transform:translateY(20px);transition:opacity 0.75s ease,transform 0.75s ease;}
+.fi.v{opacity:1;transform:none;}
+
+@media(max-width:900px){
+  nav{padding:1rem 1.2rem;}
+  .hero{grid-template-columns:1fr;}
+  .hero-left{min-height:58vw;}
+  .hero-right{padding:3rem 1.5rem;}
+  section,.career,.gallery-sec,.cta-strip,footer{padding:3.5rem 1.5rem;}
+  .academic-grid,.ph-inner{grid-template-columns:1fr;}
+  .ac-col{padding:0;}
+  .ac-col:last-child{padding:2rem 0 0;border-left:none;border-top:0.5px solid var(--border);}
+  .showcase{grid-template-columns:1fr;}
+  .gallery-grid{grid-template-columns:repeat(2,1fr);}
+  .cta-strip{flex-direction:column;text-align:center;}
+  footer{flex-direction:column;gap:0.8rem;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── 진입 오버레이 (음악 자동시작용) ── -->
+<div id="start-overlay" onclick="startExperience()">
+  <div class="so-logo">明</div>
+  <div class="so-title">道運寺 도운사</div>
+  <div class="so-sub">김은정 · 명현 대표 소개</div>
+  <button class="so-btn">입장하기 ▶</button>
+</div>
+
+<!-- ── 음악 플레이어 ── -->
+<div id="music-bar">
+  <div class="wave-icon paused" id="wave"><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="track-info">
+    <div class="track-name" id="tname">고요한 흐름 · 도운사</div>
+    <div class="track-sub">저작권 없는 생성 앰비언트</div>
+  </div>
+  <input id="vol-sl" type="range" min="0" max="1" step="0.05" value="0.5" title="음량">
+  <button class="ctrl-btn" id="pbtn" onclick="toggleMusic()">⏸</button>
+</div>
+<audio id="bg-audio" src="assets/audio/ambient.mp3" loop preload="none"></audio>
+
+<!-- ── NAV ── -->
+<nav>
+  <a href="index.html" class="nav-logo">道運寺 도운사</a>
+  <div class="nav-actions">
+    <a href="index.html" class="nav-back">← 홈</a>
+    <a href="reservation.html" class="nav-cta">상담 예약</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-left">
+    <div id="hero-bg"><canvas id="hero-canvas"></canvas></div>
+    <img id="hero-photo" src="assets/images/profile.jpg" alt="김은정 명현 대표" onload="this.style.display='block';document.getElementById('hero-canvas').style.opacity='0.25';" onerror="this.style.display='none';">
+    <div class="hero-overlay"></div>
+    <span class="float-k">運</span><span class="float-k">明</span><span class="float-k">道</span>
+    <div class="hero-info">
+      <div class="hero-badge">명현 · 도운사 대표 무속인</div>
+      <p class="hero-hanja">明賢 · 도운사</p>
+      <h1 class="hero-name">김은정</h1>
+      <p class="hero-tagline">학문과 삶, 현장의 경험과<br>깊은 안목이 하나로 만나는 자리에서<br>사람의 이야기를 듣고 방향을 함께 찾습니다.</p>
+    </div>
+  </div>
+  <div class="hero-right">
+    <p class="eyebrow">About the Founder</p>
+    <h2 class="intro-title">사람을 공부하고,<br>사람과 함께 걸어온<br>시간들이 여기 있습니다</h2>
+    <p class="intro-body">사회복지, 경영학, 스피치, 교육, 봉사, 무속 — 서로 다른 것 같지만 하나의 뿌리로 이어져 있습니다. 사람을 이해하고, 삶을 더 나은 방향으로 안내하는 것. 그것이 제가 평생 해온 일이고, 지금 도운사에서 하고 있는 일입니다.</p>
+    <div class="stat-row">
+      <div class="stat-item"><p class="stat-num">석사</p><p class="stat-label">국립부경대<br>경영대학원</p></div>
+      <div class="stat-item"><p class="stat-num">다수</p><p class="stat-label">자격증 &<br>강의 이력</p></div>
+      <div class="stat-item"><p class="stat-num">현직</p><p class="stat-label">삼족오연합회<br>여성회장</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 의식 쇼케이스 ── -->
+<div class="showcase">
+  <div class="showcase-slot" id="ss-gut">
+    <canvas class="ss-canvas" data-type="gut"></canvas>
+    <img id="ss-gut-img" src="assets/images/gut.jpg" alt="굿 의식" onload="this.style.display='block';" onerror="this.style.display='none';">
+    <div class="showcase-info"><div class="showcase-hanja">巫</div><div class="showcase-name">굿 (巫儀)</div><div class="showcase-desc">신명을 불러 막힌 기운을 열고 삶의 흐름을 바꾸는 전통 의식</div></div>
+  </div>
+  <div class="showcase-slot" id="ss-jakdu">
+    <canvas class="ss-canvas" data-type="jakdu"></canvas>
+    <img id="ss-jakdu-img" src="assets/images/jakdu.jpg" alt="12작두 타기" onload="this.style.display='block';" onerror="this.style.display='none';">
+    <div class="showcase-info"><div class="showcase-hanja">劍</div><div class="showcase-name">12 작두 타기</div><div class="showcase-desc">12개의 날 선 작두 위에 맨발로 오르는 신의 증험. 도운사 명현만의 전문 의례</div></div>
+  </div>
+  <div class="showcase-slot" id="ss-chundo">
+    <canvas class="ss-canvas" data-type="chundo"></canvas>
+    <img id="ss-chundo-img" src="assets/images/chundo.jpg" alt="천도재" onload="this.style.display='block';" onerror="this.style.display='none';">
+    <div class="showcase-info"><div class="showcase-hanja">度</div><div class="showcase-name">천도재 (薦度齋)</div><div class="showcase-desc">떠난 영혼이 편안히 나아갈 수 있도록 인도하는 제례. 남은 이들의 마음도 함께 위로</div></div>
+  </div>
+</div>
+
+<!-- ── 학력 ── -->
+<section class="academic fi" id="academic">
+  <p class="sec-label">Education & Background</p>
+  <h2 class="sec-title">학력 및 강의 이력</h2>
+  <p class="sec-desc">현장의 안목 위에 학문의 깊이가 더해진 배경입니다.</p>
+  <div class="academic-grid">
+    <div class="ac-col">
+      <p class="ac-col-title">학력</p>
+      <div class="ac-item"><span class="ac-year">학사</span><div><p class="ac-name">사회복지학 학사</p><p class="ac-detail">사람을 돕는 일의 학문적 출발점</p></div></div>
+      <div class="ac-item"><span class="ac-year">학사</span><div><p class="ac-name">경영학 학사</p><p class="ac-detail">조직과 사람, 경영 시스템 이해</p></div></div>
+      <div class="ac-item"><span class="ac-year">석사</span><div><p class="ac-name">경영학 석사 졸업</p><p class="ac-detail">국립부경대학교 경영대학원</p></div></div>
+      <div class="ac-item"><span class="ac-year">수료</span><div><p class="ac-name">스피치 과정 수료</p><p class="ac-detail">동아대학교 평생대학원</p></div></div>
+    </div>
+    <div class="ac-col">
+      <p class="ac-col-title">강의 · 자격 · 활동</p>
+      <div class="ac-item"><span class="ac-year">현재</span><div><p class="ac-name">스피치 강의</p><p class="ac-detail">동아대 평생대학원 · 기관 초청 강의</p></div></div>
+      <div class="ac-item"><span class="ac-year">현재</span><div><p class="ac-name">경영학 프리랜서 강의</p><p class="ac-detail">기업 · 기관 대상 경영 강의</p></div></div>
+      <div class="ac-item"><span class="ac-year">현재</span><div><p class="ac-name">다문화 · 한국어 강의</p><p class="ac-detail">다문화 가정 지원 및 언어 교육</p></div></div>
+      <div class="ac-item"><span class="ac-year">취득</span><div><p class="ac-name">메타버스 1급 강사 · 요양보호사 외 다수</p><p class="ac-detail">복지·디지털 분야 전문 자격</p></div></div>
+      <div class="ac-item"><span class="ac-year">봉사</span><div><p class="ac-name">상록수 부산지역 부회장 역임 · 봉사 대상 수상</p><p class="ac-detail">지역 사회 봉사 활동</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 경력 ── -->
+<section class="career fi">
+  <p class="sec-label">Career Timeline</p>
+  <h2 class="sec-title" style="color:var(--cream);">걸어온 길</h2>
+  <p class="sec-desc">다양한 현장에서 쌓아온 이력이 도운사로 이어집니다.</p>
+  <div class="ct">
+    <div class="ci"><div class="ci-dc"><div class="ci-dot"></div><div class="ci-line"></div></div><div><p class="ci-per">학사 과정</p><p class="ci-role">사회복지학 · 경영학 학사 취득</p><p class="ci-org">사람을 이해하는 두 가지 언어를 배우다</p></div></div>
+    <div class="ci"><div class="ci-dc"><div class="ci-dot"></div><div class="ci-line"></div></div><div><p class="ci-per">경력 초기</p><p class="ci-role">종합보험회사 대표 역임</p><p class="ci-org">경영 실무와 조직 운영의 현장 경험</p></div></div>
+    <div class="ci"><div class="ci-dc"><div class="ci-dot"></div><div class="ci-line"></div></div><div><p class="ci-per">교육 · 봉사</p><p class="ci-role">스피치 · 다문화 · 한국어 강의 시작</p><p class="ci-org">동아대 평생대학원 수료 · 지역 교육 현장</p></div></div>
+    <div class="ci"><div class="ci-dc"><div class="ci-dot"></div><div class="ci-line"></div></div><div><p class="ci-per">사회 활동</p><p class="ci-role">상록수 부산지역 부회장 역임 · 봉사 대상 수상</p><p class="ci-org">지역 사회와의 깊은 연결, 나눔의 기록</p></div></div>
+    <div class="ci"><div class="ci-dc"><div class="ci-dot"></div><div class="ci-line"></div></div><div><p class="ci-per">대학원</p><p class="ci-role">국립부경대학교 경영대학원 석사 졸업</p><p class="ci-org">학문의 깊이를 더하다</p></div></div>
+    <div class="ci cur"><div class="ci-dc"><div class="ci-dot"></div><div class="ci-line"></div></div><div><p class="ci-per">현재</p><p class="ci-role">한국민속문화삼족오연합회 여성회장</p><p class="ci-org">민속 문화와 여성 리더십의 현장에서</p></div></div>
+    <div class="ci cur"><div class="ci-dc"><div class="ci-dot"></div></div><div><p class="ci-per">현재</p><p class="ci-role">도운사 대표 · 명현 (明賢)</p><p class="ci-org">모든 경험이 하나로 모이는 자리</p></div></div>
+  </div>
+</section>
+
+<!-- ── 철학 ── -->
+<section class="philosophy fi">
+  <div class="ph-inner">
+    <div>
+      <p class="sec-label">Philosophy</p>
+      <h2 class="sec-title">사람을 향한<br>하나의 안목</h2>
+      <p class="sec-desc" style="margin-bottom:2rem;">학문과 봉사, 경영과 무속. 서로 다른 길처럼 보이지만 결국 같은 곳을 향했습니다. 사람을 깊이 이해하고, 더 나은 방향을 함께 찾는 것.</p>
+      <div class="quote-block">
+        <p class="quote-text">"공부는 사람을 이해하기 위해서,<br>경험은 사람과 함께하기 위해서,<br>그리고 지금 이 자리는<br>그 모든 것을 나누기 위해서입니다."</p>
+        <p class="quote-attr">— 명현 (明賢) 김은정</p>
+      </div>
+    </div>
+    <div class="pp-list">
+      <div class="pp"><p class="pp-num">01</p><p class="pp-title">판단하지 않는 자리</p><p class="pp-desc">어떤 이야기도 판단 없이 듣겠습니다. 상담은 평가가 아닌 동행입니다.</p></div>
+      <div class="pp"><p class="pp-num">02</p><p class="pp-title">학문과 현장의 균형</p><p class="pp-desc">경영학 석사 과정과 수십 년 무속 수련이 공존합니다. 논리와 직관, 둘 다 필요합니다.</p></div>
+      <div class="pp"><p class="pp-num">03</p><p class="pp-title">현장에서 나온 통찰</p><p class="pp-desc">보험 대표, 강의, 봉사, 문화 운동 — 모든 현장의 경험이 상담에 담깁니다.</p></div>
+      <div class="pp"><p class="pp-num">04</p><p class="pp-title">삶의 근원을 보는 눈</p><p class="pp-desc">겉으로 드러난 문제 뒤에 있는 삶의 흐름과 기운을 함께 들여다봅니다.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 갤러리 ── -->
+<section class="gallery-sec fi">
+  <p class="sec-label">Gallery</p>
+  <h2 class="sec-title">현장 사진 갤러리</h2>
+  <p class="sec-desc">현장의 순간들을 담았습니다.</p>
+  <div class="gallery-grid" id="gGrid"></div>
+</section>
+
+<!-- ── CTA ── -->
+<div class="cta-strip">
+  <div><p class="cta-t">명현과 함께하는 상담을 예약하세요</p><p class="cta-d">처음 오시는 분은 기본 상담 60분부터 시작합니다.</p></div>
+  <a href="reservation.html" class="btn-dk">상담 예약하기</a>
+</div>
+<footer>
+  <p class="f-logo">道運寺 도운사</p>
+  <div class="f-info"><p>대표 김은정 (명현) · dowunsa.kr · 부산</p><p style="margin-top:0.2rem;">© 2025 Dowunsa. All rights reserved.</p></div>
+  <a href="index.html" style="font-size:0.7rem;color:var(--ink-muted);text-decoration:none;">홈으로</a>
+</footer>
+
+<script>
+/* ══ SCROLL FADE ══ */
+const obs = new IntersectionObserver((es)=>{ es.forEach((e,i)=>{ if(e.isIntersecting) setTimeout(()=>e.target.classList.add('v'),i*80); }); },{threshold:0.06});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+
+/* ══ HERO CANVAS — 불꽃/작두 일러스트 ══ */
+(function(){
+  const cv = document.getElementById('hero-canvas');
+  const p = cv.parentElement;
+  function resize(){ cv.width=p.offsetWidth; cv.height=p.offsetHeight; }
+  resize(); window.addEventListener('resize', resize);
+  const ctx = cv.getContext('2d');
+  const particles = [];
+  for(let i=0;i<38;i++){
+    particles.push({
+      x: Math.random()*1, y: Math.random()*1,
+      vx:(Math.random()-0.5)*0.0008, vy:-(Math.random()*0.0012+0.0003),
+      r: Math.random()*0.012+0.003, life:Math.random(),
+      hue: 28+Math.random()*20
+    });
+  }
+  function draw(){
+    const w=cv.width, h=cv.height;
+    ctx.clearRect(0,0,w,h);
+    // 배경 어두운 그라디언트
+    const bg=ctx.createRadialGradient(w*0.5,h*0.38,0,w*0.5,h*0.38,w*0.7);
+    bg.addColorStop(0,'rgba(40,32,18,0.85)'); bg.addColorStop(1,'rgba(14,12,10,0.98)');
+    ctx.fillStyle=bg; ctx.fillRect(0,0,w,h);
+    // 작두 날 (중앙 가로)
+    const sx=w*0.18, ex=w*0.82, sy=h*0.62;
+    ctx.save();
+    const bladeGrad=ctx.createLinearGradient(sx,sy,ex,sy);
+    bladeGrad.addColorStop(0,'rgba(184,151,90,0)');
+    bladeGrad.addColorStop(0.2,'rgba(200,168,100,0.55)');
+    bladeGrad.addColorStop(0.5,'rgba(220,190,120,0.8)');
+    bladeGrad.addColorStop(0.8,'rgba(200,168,100,0.55)');
+    bladeGrad.addColorStop(1,'rgba(184,151,90,0)');
+    ctx.strokeStyle=bladeGrad; ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,sy); ctx.stroke();
+    // 작두 받침대 두 개
+    [[w*0.3,sy],[w*0.7,sy]].forEach(([bx,by])=>{
+      ctx.fillStyle='rgba(184,151,90,0.18)';
+      ctx.fillRect(bx-5,by,10,h*0.12);
+      ctx.fillStyle='rgba(184,151,90,0.12)';
+      ctx.fillRect(bx-12,by+h*0.12,24,6);
+    });
+    ctx.restore();
+    // 불꽃 파티클
+    particles.forEach(pt=>{
+      pt.x += pt.vx; pt.y += pt.vy; pt.life += 0.008;
+      if(pt.y<-0.05||pt.life>1){ pt.y=0.62+Math.random()*0.05; pt.x=0.3+Math.random()*0.4; pt.life=0; }
+      const alpha=(1-pt.life)*0.65;
+      const pg=ctx.createRadialGradient(pt.x*w,pt.y*h,0,pt.x*w,pt.y*h,pt.r*w);
+      pg.addColorStop(0,`hsla(${pt.hue},90%,80%,${alpha})`);
+      pg.addColorStop(1,`hsla(${pt.hue},80%,50%,0)`);
+      ctx.fillStyle=pg; ctx.beginPath(); ctx.arc(pt.x*w,pt.y*h,pt.r*w,0,Math.PI*2); ctx.fill();
+    });
+    // 원형 빛 후광
+    const aura=ctx.createRadialGradient(w*0.5,h*0.32,0,w*0.5,h*0.32,w*0.28);
+    aura.addColorStop(0,'rgba(184,151,90,0.07)'); aura.addColorStop(1,'rgba(184,151,90,0)');
+    ctx.fillStyle=aura; ctx.beginPath(); ctx.arc(w*0.5,h*0.32,w*0.28,0,Math.PI*2); ctx.fill();
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ══ SHOWCASE CANVAS ══ */
+(function(){
+  const configs={
+    gut:{ colors:['#8B2020','#C43030','#E05020','#F08040'], label:'巫' },
+    jakdu:{ colors:['#1A2535','#2A3D55','#B8975A','#D4A870'], label:'劍' },
+    chundo:{ colors:['#1A1830','#2A2848','#7060A0','#C0A0E0'], label:'度' }
+  };
+  document.querySelectorAll('.ss-canvas').forEach(cv=>{
+    const type=cv.dataset.type;
+    const cfg=configs[type];
+    const slot=cv.closest('.showcase-slot');
+    function resize(){ cv.width=slot.offsetWidth; cv.height=slot.offsetHeight; }
+    resize(); window.addEventListener('resize',resize);
+    const ctx=cv.getContext('2d');
+    const pts=[];
+    for(let i=0;i<22;i++) pts.push({x:Math.random(),y:Math.random(),vx:(Math.random()-0.5)*0.001,vy:(Math.random()-0.5)*0.001,r:Math.random()*0.08+0.02});
+    function draw(){
+      const w=cv.width,h=cv.height;
+      ctx.clearRect(0,0,w,h);
+      const bg=ctx.createLinearGradient(0,0,w,h);
+      bg.addColorStop(0,cfg.colors[0]); bg.addColorStop(1,cfg.colors[1]);
+      ctx.fillStyle=bg; ctx.fillRect(0,0,w,h);
+      pts.forEach(pt=>{
+        pt.x+=pt.vx; pt.y+=pt.vy;
+        if(pt.x<-0.1||pt.x>1.1)pt.vx*=-1;
+        if(pt.y<-0.1||pt.y>1.1)pt.vy*=-1;
+        const g=ctx.createRadialGradient(pt.x*w,pt.y*h,0,pt.x*w,pt.y*h,pt.r*w);
+        g.addColorStop(0,cfg.colors[2]+'33'); g.addColorStop(1,cfg.colors[2]+'00');
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(pt.x*w,pt.y*h,pt.r*w,0,Math.PI*2); ctx.fill();
+      });
+      // 한자
+      ctx.font=`300 ${Math.min(w,h)*0.35}px 'Noto Serif KR',serif`;
+      ctx.fillStyle=cfg.colors[3]+'1A'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(cfg.label,w*0.5,h*0.42);
+      requestAnimationFrame(draw);
+    }
+    draw();
+  });
+})();
+
+/* ══ 음악 (실제 mp3 재생) ══ */
+const bgAudio = document.getElementById('bg-audio');
+let playing = false;
+bgAudio.volume = parseFloat(document.getElementById('vol-sl').value);
+bgAudio.addEventListener('error', () => {
+  // assets/audio/ambient.mp3 파일이 없으면 플레이어를 숨김
+  document.getElementById('music-bar').style.display = 'none';
+});
+document.getElementById('vol-sl').addEventListener('input', e => { bgAudio.volume = e.target.value; });
+function startExperience(){
+  const overlay=document.getElementById('start-overlay');
+  overlay.style.opacity='0'; overlay.style.transition='opacity 0.6s';
+  setTimeout(()=>overlay.style.display='none',650);
+  bgAudio.play().then(()=>{
+    playing=true;
+    document.getElementById('pbtn').textContent='⏸';
+    document.getElementById('wave').classList.remove('paused');
+  }).catch(()=>{ /* 음원 파일이 없거나 재생 차단됨 */ });
+}
+function toggleMusic(){
+  if(playing){ bgAudio.pause(); playing=false; }
+  else { bgAudio.play(); playing=true; }
+  document.getElementById('pbtn').textContent=playing?'⏸':'▶';
+  document.getElementById('wave').classList.toggle('paused',!playing);
+}
+
+/* ══ 갤러리 (assets/images/gallery-1.jpg ~ gallery-8.jpg 중 존재하는 파일만 표시) ══ */
+function buildGallery(){
+  const g=document.getElementById('gGrid'); g.innerHTML='';
+  for(let i=1;i<=8;i++){
+    const d=document.createElement('div'); d.className='gs';
+    d.innerHTML=`<div class="gs-ph"><div class="gs-ic">巫</div><div class="gs-lb">사진 준비 중</div></div><img alt="도운사 현장 사진 ${i}" src="assets/images/gallery-${i}.jpg" onload="this.style.display='block';this.previousElementSibling.style.display='none';" onerror="this.style.display='none';">`;
+    g.appendChild(d);
+  }
+}
+buildGallery();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</body>
+</html>

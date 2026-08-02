@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>예약 관리 — 도운사</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/images/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
+<script src="assets/js/firebase-config.js"></script>
+<style>
+  :root {
+    --cream: #F7F4EF; --ink: #1E1C18; --ink-light: #4A4740; --ink-muted: #8A877F;
+    --gold: #B8975A; --gold-light: #F0E8D8; --sage: #6B7B6A; --sage-light: #E8EDE6;
+    --border: rgba(30,28,24,0.12);
+    --serif: 'Noto Serif KR', serif; --sans: 'Noto Sans KR', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--cream); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.7; }
+  header { padding: 1.2rem 1.5rem; border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--cream); z-index: 10; }
+  .logo { font-family: var(--serif); font-size: 1.05rem; color: var(--ink); }
+  .head-actions { display: flex; gap: 0.8rem; align-items: center; }
+  .head-btn { font-size: 0.75rem; color: var(--ink-muted); text-decoration: none; border: 0.5px solid var(--border); padding: 0.4rem 0.9rem; background: none; cursor: pointer; font-family: var(--sans); }
+  .head-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .page { max-width: 900px; margin: 0 auto; padding: 2rem 1.2rem 5rem; }
+  .page-title { font-family: var(--serif); font-size: 1.4rem; font-weight: 300; margin-bottom: 0.3rem; }
+  .page-sub { font-size: 0.8rem; color: var(--ink-muted); margin-bottom: 2rem; }
+  .notif-btn { font-size: 0.72rem; color: var(--sage); border: 0.5px solid var(--sage); background: var(--sage-light); padding: 0.5rem 1rem; cursor: pointer; margin-bottom: 1.5rem; display: inline-block; }
+
+  .card { background: white; border: 0.5px solid var(--border); margin-bottom: 1rem; padding: 1.3rem 1.4rem; }
+  .card.done { opacity: 0.5; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
+  .card-name { font-family: var(--serif); font-size: 1.1rem; }
+  .card-time { font-size: 0.72rem; color: var(--ink-muted); }
+  .badge { display: inline-block; font-size: 0.65rem; letter-spacing: 0.05em; border: 0.5px solid var(--gold); color: var(--gold); padding: 0.15rem 0.6rem; margin-left: 0.5rem; }
+  .badge.done { border-color: var(--sage); color: var(--sage); }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap: 0.7rem 1.2rem; font-size: 0.82rem; margin-bottom: 0.9rem; }
+  .card-grid div span { display: block; font-size: 0.68rem; color: var(--ink-muted); margin-bottom: 0.15rem; }
+  .card-concern { font-size: 0.82rem; color: var(--ink-light); background: var(--gold-light); padding: 0.7rem 0.9rem; margin-bottom: 0.9rem; }
+  .card-actions { display: flex; gap: 0.6rem; }
+  .card-btn { font-size: 0.75rem; border: 0.5px solid var(--border); background: none; padding: 0.4rem 0.9rem; cursor: pointer; font-family: var(--sans); color: var(--ink-light); }
+  .card-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .saju-panel { margin-top: 1rem; padding-top: 1rem; border-top: 0.5px dashed var(--border); display: none; }
+  .saju-panel.show { display: block; }
+  .pillars { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); margin-bottom: 1rem; }
+  .pillar-col { background: white; display: flex; flex-direction: column; }
+  .pillar-label { font-size: 0.62rem; color: var(--ink-muted); letter-spacing: 0.1em; text-align: center; padding: 0.5rem 0.2rem 0.4rem; border-bottom: 0.5px solid var(--border); }
+  .pillar-cell { padding: 0.6rem 0.3rem; text-align: center; }
+  .pillar-cell.gan { border-bottom: 0.5px solid var(--border); }
+  .cell-tag { font-size: 0.55rem; color: var(--ink-muted); margin-bottom: 0.2rem; }
+  .pillar-hanja { font-family: var(--serif); font-size: 1.2rem; color: var(--ink); }
+  .pillar-kr { font-size: 0.6rem; color: var(--gold); margin-top: 0.15rem; }
+  .elements { display: flex; gap: 0.4rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
+  .el-chip { flex: 1; min-width: 50px; background: var(--sage-light); text-align: center; padding: 0.5rem 0.3rem; font-size: 0.72rem; }
+  .interp { font-size: 0.78rem; color: var(--ink-light); background: var(--gold-light); padding: 0.8rem 1rem; line-height: 1.8; }
+
+  .empty-state { text-align: center; padding: 4rem 1rem; color: var(--ink-muted); font-size: 0.85rem; }
+  .setup-warn { max-width: 500px; margin: 4rem auto; text-align: center; font-size: 0.85rem; color: var(--ink-muted); line-height: 2; padding: 0 1.5rem; }
+</style>
+</head>
+<body>
+<header>
+  <p class="logo">道運寺 예약 관리</p>
+  <div class="head-actions">
+    <button class="head-btn" onclick="requestPush()">🔔 알림 켜기</button>
+    <a href="admin-saju.html" class="head-btn">사주 계산기</a>
+    <button class="head-btn" onclick="logout()">로그아웃</button>
+  </div>
+</header>
+
+<div class="page" id="page" style="display:none;">
+  <p class="page-title">예약 신청 목록</p>
+  <p class="page-sub">최신 신청 순으로 표시됩니다. 카드 안 '사주 보기'를 누르면 바로 계산됩니다.</p>
+  <div id="list"></div>
+</div>
+
+<div class="setup-warn" id="setupWarn" style="display:none;">
+  Firebase가 아직 설정되지 않았습니다.<br>
+  assets/js/firebase-config.js 에 실제 프로젝트 값을 채워주세요.
+</div>
+
+<script>
+/* ══ 사주 계산 로직 (admin-saju.html과 동일) ══ */
+const GAN_KR = ['갑','을','병','정','무','기','경','신','임','계'];
+const GAN_HJ = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const ZHI_KR = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const ZHI_HJ = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const GAN_EL = ['목','목','화','화','토','토','금','금','수','수'];
+const ZHI_EL = ['수','토','목','목','토','화','화','토','금','금','토','수'];
+const CUTOFFS = [
+  {m:1, d:6, zhi:1}, {m:2, d:4, zhi:2}, {m:3, d:6, zhi:3}, {m:4, d:5, zhi:4},
+  {m:5, d:6, zhi:5}, {m:6, d:6, zhi:6}, {m:7, d:7, zhi:7}, {m:8, d:8, zhi:8},
+  {m:9, d:8, zhi:9}, {m:10,d:8, zhi:10}, {m:11,d:7, zhi:11}, {m:12,d:7, zhi:0},
+];
+function toJDN(y,m,d){const a=Math.floor((14-m)/12);const y2=y+4800-a;const m2=m+12*a-3;return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;}
+function getYearForPillar(y,m,d){ if (m<2||(m===2&&d<4)) return y-1; return y; }
+function getMonthZhi(m,d){ if (m===1&&d<6) return 0; let best=CUTOFFS[0]; for(const c of CUTOFFS){ if(c.m<m||(c.m===m&&c.d<=d)) best=c; } return best.zhi; }
+function mod(n,m){ return ((n%m)+m)%m; }
+
+function calcSajuData(dateVal, hourZhiIdx) {
+  const [y,m,d] = dateVal.split('-').map(Number);
+  const yearForPillar = getYearForPillar(y,m,d);
+  const yearGanIdx = mod(yearForPillar-4,10);
+  const yearZhiIdx = mod(yearForPillar-4,12);
+  const monthZhiIdx = getMonthZhi(m,d);
+  const monthStartGan = mod(mod(yearGanIdx,5)*2+2,10);
+  const monthGanIdx = mod(monthStartGan+mod(monthZhiIdx-2,12),10);
+  const jdn = toJDN(y,m,d);
+  const dayGanIdx = mod(jdn+9,10);
+  const dayZhiIdx = mod(jdn+1,12);
+  let hourGanIdx = null;
+  if (hourZhiIdx !== null) {
+    const hourStartGan = mod(dayGanIdx,5)*2;
+    hourGanIdx = mod(hourStartGan+hourZhiIdx,10);
+  }
+  return [
+    { label:'년주', gan:yearGanIdx, zhi:yearZhiIdx },
+    { label:'월주', gan:monthGanIdx, zhi:monthZhiIdx },
+    { label:'일주', gan:dayGanIdx, zhi:dayZhiIdx },
+    { label:'시주', gan:hourGanIdx, zhi:hourZhiIdx },
+  ];
+}
+
+function renderSaju(pillars) {
+  const pillarsHtml = pillars.map(p => {
+    if (p.gan === null) {
+      return `<div class="pillar-col"><div class="pillar-label">${p.label}</div><div class="pillar-cell gan"><div class="cell-tag">천간</div><div class="pillar-hanja" style="font-size:0.85rem;color:var(--ink-muted);">모름</div></div><div class="pillar-cell zhi"><div class="cell-tag">지지</div><div class="pillar-hanja" style="font-size:0.85rem;color:var(--ink-muted);">모름</div></div></div>`;
+    }
+    return `<div class="pillar-col">
+      <div class="pillar-label">${p.label}</div>
+      <div class="pillar-cell gan"><div class="cell-tag">천간</div><div class="pillar-hanja">${GAN_HJ[p.gan]}</div><div class="pillar-kr">${GAN_KR[p.gan]}</div></div>
+      <div class="pillar-cell zhi"><div class="cell-tag">지지</div><div class="pillar-hanja">${ZHI_HJ[p.zhi]}</div><div class="pillar-kr">${ZHI_KR[p.zhi]}</div></div>
+    </div>`;
+  }).join('');
+
+  const elCount = { 목:0, 화:0, 토:0, 금:0, 수:0 };
+  pillars.forEach(p => { if (p.gan===null) return; elCount[GAN_EL[p.gan]]++; elCount[ZHI_EL[p.zhi]]++; });
+  const elHtml = Object.entries(elCount).map(([el,cnt]) => `<div class="el-chip">${el} ${cnt}개</div>`).join('');
+  const sorted = Object.entries(elCount).sort((a,b)=>b[1]-a[1]);
+  const weakest = Object.entries(elCount).filter(([,c])=>c===0).map(([el])=>el);
+  let interp = `<strong>${sorted[0][0]}</strong> 기운이 가장 두드러집니다 (${sorted[0][1]}개).`;
+  if (weakest.length) interp += ` ${weakest.join(', ')} 기운은 원국에 없습니다.`;
+  interp += ' (오행 개수 기반 단순 참고 메모)';
+
+  return `<div class="pillars">${pillarsHtml}</div><div class="elements">${elHtml}</div><div class="interp">${interp}</div>`;
+}
+
+/* ══ Firebase 인증 + 데이터 ══ */
+if (!FIREBASE_READY) {
+  document.getElementById('setupWarn').style.display = 'block';
+} else {
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user) { window.location.href = 'admin-login.html'; return; }
+    document.getElementById('page').style.display = 'block';
+    loadReservations();
+  });
+}
+
+function logout() {
+  firebase.auth().signOut().then(() => window.location.href = 'admin-login.html');
+}
+
+function loadReservations() {
+  firebase.firestore().collection('reservations').orderBy('createdAt', 'desc')
+    .onSnapshot((snap) => {
+      const list = document.getElementById('list');
+      if (snap.empty) {
+        list.innerHTML = '<div class="empty-state">아직 접수된 예약이 없습니다.</div>';
+        return;
+      }
+      list.innerHTML = snap.docs.map(doc => renderCard(doc.id, doc.data())).join('');
+    }, (err) => {
+      console.error(err);
+      document.getElementById('list').innerHTML = '<div class="empty-state">목록을 불러오지 못했습니다. Firestore 보안 규칙을 확인해주세요.</div>';
+    });
+}
+
+function renderCard(id, r) {
+  const time = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate().toLocaleString('ko-KR') : '(전송 중)';
+  const isDone = r.status === 'done';
+  return `<div class="card ${isDone?'done':''}" id="card-${id}">
+    <div class="card-top">
+      <div><span class="card-name">${escapeHtml(r.name||'이름 없음')}</span><span class="badge ${isDone?'done':''}">${isDone?'완료':r.program||'상담'}</span></div>
+      <span class="card-time">${time}</span>
+    </div>
+    <div class="card-grid">
+      <div><span>연락처</span>${escapeHtml(r.phone||'-')}</div>
+      <div><span>선호 연락</span>${escapeHtml(r.contact_pref||'-')}</div>
+      <div><span>생년월일</span>${escapeHtml(r.birth_date||'-')}</div>
+      <div><span>태어난 시간</span>${escapeHtml(r.birth_time||'-')}</div>
+      <div><span>희망일정 1</span>${escapeHtml(r.pref_date1||'-')}</div>
+      <div><span>희망일정 2</span>${escapeHtml(r.pref_date2||'-')}</div>
+      <div><span>선호 시간대</span>${escapeHtml(r.pref_time||'-')}</div>
+      <div><span>알게 된 경로</span>${escapeHtml(r.channel||'-')}</div>
+    </div>
+    ${r.concern ? `<div class="card-concern">${escapeHtml(r.concern)}</div>` : ''}
+    <div class="card-actions">
+      <button class="card-btn" onclick="toggleSaju('${id}','${r.birth_date||''}','${r.birth_time||''}')">사주 보기</button>
+      <button class="card-btn" onclick="toggleDone('${id}', ${!isDone})">${isDone ? '완료 취소' : '완료 처리'}</button>
+    </div>
+    <div class="saju-panel" id="saju-${id}"></div>
+  </div>`;
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const BIRTH_TIME_TO_ZHI = {
+  '자시(23:00~00:59)':0, '축시(01:00~02:59)':1, '인시(03:00~04:59)':2, '묘시(05:00~06:59)':3,
+  '진시(07:00~08:59)':4, '사시(09:00~10:59)':5, '오시(11:00~12:59)':6, '미시(13:00~14:59)':7,
+  '신시(15:00~16:59)':8, '유시(17:00~18:59)':9, '술시(19:00~20:59)':10, '해시(21:00~22:59)':11
+};
+
+function toggleSaju(id, birthDate, birthTime) {
+  const panel = document.getElementById('saju-' + id);
+  const isShown = panel.classList.contains('show');
+  if (isShown) { panel.classList.remove('show'); panel.innerHTML=''; return; }
+  if (!birthDate) { panel.innerHTML = '<p style="font-size:0.8rem;color:var(--ink-muted);">생년월일 정보가 없습니다.</p>'; panel.classList.add('show'); return; }
+  const hourZhiIdx = BIRTH_TIME_TO_ZHI.hasOwnProperty(birthTime) ? BIRTH_TIME_TO_ZHI[birthTime] : null;
+  const pillars = calcSajuData(birthDate, hourZhiIdx);
+  panel.innerHTML = renderSaju(pillars);
+  panel.classList.add('show');
+}
+
+function toggleDone(id, done) {
+  firebase.firestore().collection('reservations').doc(id).update({ status: done ? 'done' : 'new' });
+}
+
+/* ══ 푸시 알림 등록 (FCM) ══ */
+function requestPush() {
+  if (!FIREBASE_READY) { alert('Firebase 설정을 먼저 완료해주세요.'); return; }
+  if (!('Notification' in window)) { alert('이 브라우저는 알림을 지원하지 않습니다.'); return; }
+  Notification.requestPermission().then((perm) => {
+    if (perm !== 'granted') { alert('알림 권한이 거부되었습니다.'); return; }
+    try {
+      const messaging = firebase.messaging();
+      messaging.getToken({ vapidKey: FIREBASE_VAPID_KEY }).then((token) => {
+        firebase.firestore().collection('admin_tokens').doc(token).set({ token, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        alert('알림이 설정되었습니다. 새 예약이 오면 이 기기로 알림이 전송됩니다.');
+      }).catch((err) => { console.error(err); alert('알림 토큰을 가져오지 못했습니다. VAPID 키 설정을 확인해주세요.'); });
+    } catch (err) {
+      console.error(err);
+      alert('Firebase Messaging 설정이 필요합니다 (assets/js/firebase-config.js 및 VAPID 키).');
+    }
+  });
+}
+</script>
+</body>
+</html>

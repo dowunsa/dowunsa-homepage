@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>도운사 — 상담 예약</title>
+<meta name="description" content="도운사 상담 예약 신청 페이지. 기본상담, 심화상담, VIP 프라이빗 상담 등 프로그램을 선택하고 예약하세요.">
+<link rel="icon" type="image/png" href="assets/images/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1E1C18">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="assets/js/firebase-config.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F4EF;
+    --ink: #1E1C18;
+    --ink-light: #4A4740;
+    --ink-muted: #8A877F;
+    --gold: #B8975A;
+    --gold-light: #F0E8D8;
+    --sage: #6B7B6A;
+    --sage-light: #E8EDE6;
+    --border: rgba(30,28,24,0.12);
+    --serif: 'Noto Serif KR', serif;
+    --sans: 'Noto Sans KR', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  /* Header */
+  header {
+    padding: 1.5rem 3rem;
+    border-bottom: 0.5px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .logo { font-family: var(--serif); font-size: 1.05rem; color: var(--ink); text-decoration: none; }
+  .back-link { font-size: 0.8rem; color: var(--ink-muted); text-decoration: none; letter-spacing: 0.05em; transition: color 0.3s; }
+  .back-link:hover { color: var(--gold); }
+
+  /* Page */
+  .page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  /* Left: Program Select */
+  .sidebar-title {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: var(--ink);
+    line-height: 1.5;
+    margin-bottom: 0.8rem;
+  }
+  .sidebar-desc {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+  }
+  .program-list { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 2.5rem; }
+  .program-item {
+    border: 0.5px solid var(--border);
+    padding: 1.2rem 1.3rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: white;
+    position: relative;
+  }
+  .program-item:hover { border-color: var(--gold); }
+  .program-item.selected {
+    border-color: var(--gold);
+    background: var(--gold-light);
+  }
+  .program-item.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-size: 0.75rem;
+    color: var(--gold);
+  }
+  .prog-name {
+    font-family: var(--serif);
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+  .prog-price {
+    font-size: 0.8rem;
+    color: var(--gold);
+    margin-bottom: 0.3rem;
+  }
+  .prog-desc { font-size: 0.75rem; color: var(--ink-muted); line-height: 1.7; }
+
+  .privacy-note {
+    background: var(--sage-light);
+    border: 0.5px solid rgba(107,123,106,0.25);
+    padding: 1rem 1.2rem;
+    font-size: 0.78rem;
+    color: var(--ink-light);
+    line-height: 1.8;
+  }
+  .privacy-note strong { color: var(--sage); font-weight: 500; display: block; margin-bottom: 0.3rem; }
+
+  /* Right: Form */
+  .form-header {
+    padding-bottom: 1.5rem;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 2rem;
+  }
+  .form-label-top {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    color: var(--ink-muted);
+    margin-bottom: 0.5rem;
+  }
+  .form-title {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--ink);
+  }
+
+  .field { margin-bottom: 1.6rem; }
+  label {
+    display: block;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--ink-light);
+    margin-bottom: 0.5rem;
+  }
+  label .req { color: var(--gold); margin-left: 2px; }
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="date"],
+  select,
+  textarea {
+    width: 100%;
+    background: white;
+    border: 0.5px solid var(--border);
+    padding: 0.8rem 1rem;
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.3s;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.8; }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238A877F' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .check-group { display: flex; flex-direction: column; gap: 0.6rem; }
+  .check-item { display: flex; align-items: flex-start; gap: 0.8rem; cursor: pointer; }
+  .check-item input[type="checkbox"] {
+    width: 1rem; height: 1rem;
+    border: 0.5px solid var(--border);
+    background: white;
+    flex-shrink: 0;
+    margin-top: 2px;
+    accent-color: var(--gold);
+  }
+  .check-label { font-size: 0.82rem; color: var(--ink-light); line-height: 1.6; }
+
+  .form-hint {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    margin-top: 0.4rem;
+    line-height: 1.7;
+  }
+
+  .submit-area {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 0.5px solid var(--border);
+  }
+  .submit-btn {
+    width: 100%;
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    padding: 1.1rem 2rem;
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .submit-btn:hover { background: var(--gold); }
+  .submit-note {
+    font-size: 0.75rem;
+    color: var(--ink-muted);
+    text-align: center;
+    margin-top: 1rem;
+    line-height: 1.7;
+  }
+
+  /* Success */
+  .success-msg {
+    display: none;
+    text-align: center;
+    padding: 4rem 2rem;
+  }
+  .success-msg.show { display: block; }
+  .success-kanji {
+    font-family: var(--serif);
+    font-size: 4rem;
+    font-weight: 300;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+  }
+  .success-title {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--ink);
+    margin-bottom: 1rem;
+  }
+  .success-desc { font-size: 0.88rem; color: var(--ink-muted); line-height: 1.9; }
+
+  @media (max-width: 780px) {
+    .page { grid-template-columns: 1fr; gap: 3rem; padding: 2.5rem 1.5rem; }
+    header { padding: 1.2rem 1.5rem; }
+    .field-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">道運寺 도운사</a>
+  <a href="index.html" class="back-link">← 홈으로</a>
+</header>
+
+<div class="page">
+
+  <!-- 왼쪽: 프로그램 선택 -->
+  <div>
+    <h1 class="sidebar-title">어떤 상담을<br>원하시나요?</h1>
+    <p class="sidebar-desc">프로그램을 선택하고 오른쪽 양식을 작성해주세요.<br>확인 후 1~2일 안에 연락드립니다.</p>
+
+    <div class="program-list" id="programList">
+      <div class="program-item selected" onclick="selectProgram(this, '기본 상담 (60분)')" data-program="기본 상담 (60분)">
+        <p class="prog-name">기본 상담</p>
+        <p class="prog-price">200,000원 · 60분</p>
+        <p class="prog-desc">처음 오시는 분께 권합니다. 정서 및 인생 방향 상담.</p>
+      </div>
+      <div class="program-item" onclick="selectProgram(this, '심화 상담')" data-program="심화 상담">
+        <p class="prog-name">심화 상담</p>
+        <p class="prog-price">별도 안내</p>
+        <p class="prog-desc">기본 상담 이후 더 깊은 과정이 필요하신 분.</p>
+      </div>
+      <div class="program-item" onclick="selectProgram(this, 'VIP 프라이빗 상담')" data-program="VIP 프라이빗 상담">
+        <p class="prog-name">VIP 프라이빗 상담</p>
+        <p class="prog-price">800,000 – 1,500,000원</p>
+        <p class="prog-desc">비공개 예약. 전문직·사업가·정치 관계자 대상.</p>
+      </div>
+      <div class="program-item" onclick="selectProgram(this, '그룹 프로그램')" data-program="그룹 프로그램">
+        <p class="prog-name">그룹 프로그램</p>
+        <p class="prog-price">250,000 – 500,000원 (1인)</p>
+        <p class="prog-desc">중년 여성 회복 클래스 · 감정 회복 소규모 정기과정.</p>
+      </div>
+      <div class="program-item" onclick="selectProgram(this, '풍수 인테리어 (양택)')" data-program="풍수 인테리어 (양택)">
+        <p class="prog-name">풍수 인테리어 (양택)</p>
+        <p class="prog-price">300,000원 기본 + 70,000원/평</p>
+        <p class="prog-desc">공간의 흐름을 읽고 재정비합니다. 30평 기준 기본료.</p>
+      </div>
+    </div>
+
+    <div class="privacy-note">
+      <strong>개인정보 보호 안내</strong>
+      작성하신 모든 내용은 상담 외 목적으로 사용되지 않습니다. 제3자에게 공유되지 않으며, 요청 시 즉시 삭제됩니다.
+    </div>
+  </div>
+
+  <!-- 오른쪽: 예약 폼 -->
+  <div>
+    <div class="form-header">
+      <p class="form-label-top">RESERVATION</p>
+      <p class="form-title">예약 신청서</p>
+    </div>
+
+    <form id="reservationForm" onsubmit="handleSubmit(event)">
+      <input type="hidden" id="selectedProgram" value="기본 상담 (60분)">
+
+      <div class="field-row">
+        <div class="field">
+          <label for="name">이름 <span class="req">*</span></label>
+          <input type="text" id="name" placeholder="성함을 입력해주세요" required>
+        </div>
+        <div class="field">
+          <label for="phone">연락처 <span class="req">*</span></label>
+          <input type="tel" id="phone" placeholder="010-0000-0000" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="contact_pref">선호 연락 방법 <span class="req">*</span></label>
+        <select id="contact_pref" required>
+          <option value="">선택해주세요</option>
+          <option value="카카오톡">카카오톡 메시지</option>
+          <option value="전화">전화 통화</option>
+          <option value="문자">문자 메시지</option>
+        </select>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="birth_date">생년월일 <span class="req">*</span></label>
+          <input type="date" id="birth_date" required>
+        </div>
+        <div class="field">
+          <label for="birth_time">태어난 시간</label>
+          <select id="birth_time">
+            <option value="모름">모름 / 모르겠음</option>
+            <option value="자시(23:00~00:59)">자시 (23:00 ~ 00:59)</option>
+            <option value="축시(01:00~02:59)">축시 (01:00 ~ 02:59)</option>
+            <option value="인시(03:00~04:59)">인시 (03:00 ~ 04:59)</option>
+            <option value="묘시(05:00~06:59)">묘시 (05:00 ~ 06:59)</option>
+            <option value="진시(07:00~08:59)">진시 (07:00 ~ 08:59)</option>
+            <option value="사시(09:00~10:59)">사시 (09:00 ~ 10:59)</option>
+            <option value="오시(11:00~12:59)">오시 (11:00 ~ 12:59)</option>
+            <option value="미시(13:00~14:59)">미시 (13:00 ~ 14:59)</option>
+            <option value="신시(15:00~16:59)">신시 (15:00 ~ 16:59)</option>
+            <option value="유시(17:00~18:59)">유시 (17:00 ~ 18:59)</option>
+            <option value="술시(19:00~20:59)">술시 (19:00 ~ 20:59)</option>
+            <option value="해시(21:00~22:59)">해시 (21:00 ~ 22:59)</option>
+          </select>
+        </div>
+      </div>
+      <p class="form-hint" style="margin-top:-1rem;margin-bottom:1.6rem;">사주를 함께 살펴보기 위한 정보입니다. 시간을 정확히 모르시면 '모름'을 선택해주세요.</p>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="pref_date1">희망 일정 1순위</label>
+          <input type="date" id="pref_date1">
+        </div>
+        <div class="field">
+          <label for="pref_date2">희망 일정 2순위</label>
+          <input type="date" id="pref_date2">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="pref_time">선호 시간대</label>
+        <select id="pref_time">
+          <option value="">무관</option>
+          <option value="오전">오전 (10:00 – 12:00)</option>
+          <option value="오후">오후 (13:00 – 17:00)</option>
+          <option value="저녁">저녁 (18:00 – 20:00)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="concern">간단한 상담 내용 또는 문의사항</label>
+        <textarea id="concern" placeholder="어떤 고민이든 편하게 적어주세요. 판단하지 않겠습니다.&#10;(작성하지 않으셔도 됩니다)"></textarea>
+        <p class="form-hint">이 내용은 더 집중된 상담을 위한 참고용으로만 활용됩니다.</p>
+      </div>
+
+      <div class="field">
+        <label>알게 된 경로 (선택)</label>
+        <div class="check-group">
+          <label class="check-item">
+            <input type="checkbox" name="channel" value="인스타그램">
+            <span class="check-label">인스타그램</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="channel" value="유튜브">
+            <span class="check-label">유튜브</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="channel" value="블로그">
+            <span class="check-label">블로그 / 검색</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="channel" value="지인 소개">
+            <span class="check-label">지인 소개</span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" name="channel" value="기타">
+            <span class="check-label">기타</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="check-item">
+          <input type="checkbox" id="agreePrivacy" required>
+          <span class="check-label">개인정보 수집 및 이용에 동의합니다. <span class="req">*</span><br>
+          <span style="font-size:0.72rem; color:var(--ink-muted);">수집된 정보는 예약 확인 및 상담 안내 외 목적으로 사용되지 않습니다.</span>
+          </span>
+        </label>
+      </div>
+
+      <div class="submit-area">
+        <button type="submit" class="submit-btn">예약 신청하기</button>
+        <p class="submit-note">
+          신청 후 1~2 영업일 내 선호하신 방법으로 연락드립니다.<br>
+          급하신 경우 <a href="https://open.kakao.com/o/sWJt3TGi" target="_blank" rel="noopener" style="color:var(--gold);">카카오톡</a>으로 직접 문의해주세요.
+        </p>
+      </div>
+    </form>
+
+    <div class="success-msg" id="successMsg">
+      <div class="success-kanji">道</div>
+      <p class="success-title">신청이 완료되었습니다</p>
+      <p class="success-desc">
+        오늘 용기 내어 신청해주셔서 감사합니다.<br>
+        1~2 영업일 내로 연락드리겠습니다.<br><br>
+        기다리는 동안 블로그나 유튜브에서<br>
+        도운사 이야기를 더 보셔도 좋습니다.
+      </p>
+    </div>
+
+    <div class="success-msg" id="errorMsg" style="color:#B84040;">
+      <div class="success-kanji" style="color:#B84040;">!</div>
+      <p class="success-title">전송 중 문제가 발생했습니다</p>
+      <p class="success-desc">
+        죄송합니다, 예약 신청이 정상적으로 접수되지 않았습니다.<br>
+        번거로우시더라도 <a href="https://open.kakao.com/o/sWJt3TGi" target="_blank" rel="noopener" style="color:#B84040;text-decoration:underline;">카카오톡</a>이나 전화로 직접 문의해주시면 감사하겠습니다.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function selectProgram(el, name) {
+    document.querySelectorAll('.program-item').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('selectedProgram').value = name;
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    if (!FIREBASE_READY) {
+      console.warn('Firebase가 아직 설정되지 않았습니다. assets/js/firebase-config.js 값을 채워주세요.');
+    }
+
+    const channels = Array.from(document.querySelectorAll('input[name="channel"]:checked')).map(c => c.value).join(', ') || '없음';
+
+    const data = {
+      program: document.getElementById('selectedProgram').value,
+      name: document.getElementById('name').value,
+      phone: document.getElementById('phone').value,
+      contact_pref: document.getElementById('contact_pref').value,
+      birth_date: document.getElementById('birth_date').value,
+      birth_time: document.getElementById('birth_time').value,
+      pref_date1: document.getElementById('pref_date1').value || '미입력',
+      pref_date2: document.getElementById('pref_date2').value || '미입력',
+      pref_time: document.getElementById('pref_time').value || '무관',
+      concern: document.getElementById('concern').value || '(작성 안 함)',
+      channel: channels,
+      status: 'new',
+      createdAt: FIREBASE_READY ? firebase.firestore.FieldValue.serverTimestamp() : null
+    };
+
+    const form = document.getElementById('reservationForm');
+    const submitBtn = form.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '전송 중...';
+
+    const finish = (ok) => {
+      form.style.opacity = '0';
+      form.style.transition = 'opacity 0.4s';
+      setTimeout(() => {
+        form.style.display = 'none';
+        document.getElementById(ok ? 'successMsg' : 'errorMsg').classList.add('show');
+      }, 400);
+    };
+
+    if (!FIREBASE_READY) {
+      // Firebase 미설정 상태 — 저장할 곳이 없어 안내만 표시
+      finish(false);
+      submitBtn.disabled = false;
+      submitBtn.textContent = '예약 신청하기';
+      return;
+    }
+
+    firebase.firestore().collection('reservations').add(data)
+      .then(() => finish(true))
+      .catch((err) => { console.error('Firestore 저장 실패:', err); finish(false); })
+      .finally(() => { submitBtn.disabled = false; submitBtn.textContent = '예약 신청하기'; });
+  }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+</script>
+</body>
+</html>
