@@ -49,15 +49,15 @@
   .saju-panel.show { display: block; }
   .pillars { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); margin-bottom: 1rem; }
   .pillar-col { background: white; display: flex; flex-direction: column; }
-  .pillar-label { font-size: 0.62rem; color: var(--ink-muted); letter-spacing: 0.1em; text-align: center; padding: 0.5rem 0.2rem 0.4rem; border-bottom: 0.5px solid var(--border); }
+  .pillar-label { font-size: 0.76rem; color: var(--ink-light); letter-spacing: 0.1em; text-align: center; padding: 0.5rem 0.2rem 0.4rem; border-bottom: 0.5px solid var(--border); font-weight: 700; }
   .pillar-cell { padding: 0.6rem 0.3rem; text-align: center; }
   .pillar-cell.gan { border-bottom: 0.5px solid var(--border); }
-  .cell-tag { font-size: 0.55rem; color: var(--ink-muted); margin-bottom: 0.2rem; }
-  .pillar-hanja { font-family: var(--serif); font-size: 1.2rem; color: var(--ink); }
-  .pillar-kr { font-size: 0.6rem; color: var(--gold); margin-top: 0.15rem; }
+  .cell-tag { font-size: 0.68rem; color: var(--ink-light); margin-bottom: 0.25rem; font-weight: 600; }
+  .pillar-hanja { font-family: var(--serif); font-size: 1.6rem; color: var(--ink); font-weight: 600; }
+  .pillar-kr { font-size: 0.8rem; color: #8a6a2f; margin-top: 0.2rem; font-weight: 700; }
   .elements { display: flex; gap: 0.4rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
-  .el-chip { flex: 1; min-width: 50px; background: var(--sage-light); text-align: center; padding: 0.5rem 0.3rem; font-size: 0.72rem; }
-  .interp { font-size: 0.78rem; color: var(--ink-light); background: var(--gold-light); padding: 0.8rem 1rem; line-height: 1.8; }
+  .el-chip { flex: 1; min-width: 50px; background: var(--sage-light); text-align: center; padding: 0.6rem 0.3rem; font-size: 0.85rem; color: #4a5a49; font-weight: 700; }
+  .interp { font-size: 0.9rem; color: var(--ink); background: var(--gold-light); padding: 0.9rem 1.1rem; line-height: 1.8; font-weight: 500; }
 
   .empty-state { text-align: center; padding: 4rem 1rem; color: var(--ink-muted); font-size: 0.85rem; }
   .setup-warn { max-width: 500px; margin: 4rem auto; text-align: center; font-size: 0.85rem; color: var(--ink-muted); line-height: 2; padding: 0 1.5rem; }
@@ -119,10 +119,10 @@ function calcSajuData(dateVal, hourZhiIdx) {
     hourGanIdx = mod(hourStartGan+hourZhiIdx,10);
   }
   return [
-    { label:'년주', gan:yearGanIdx, zhi:yearZhiIdx },
-    { label:'월주', gan:monthGanIdx, zhi:monthZhiIdx },
-    { label:'일주', gan:dayGanIdx, zhi:dayZhiIdx },
     { label:'시주', gan:hourGanIdx, zhi:hourZhiIdx },
+    { label:'일주', gan:dayGanIdx, zhi:dayZhiIdx },
+    { label:'월주', gan:monthGanIdx, zhi:monthZhiIdx },
+    { label:'년주', gan:yearGanIdx, zhi:yearZhiIdx },
   ];
 }
 
