@@ -237,6 +237,24 @@ function getYearForPillar(y,m,d){ if (m<2||(m===2&&d<4)) return y-1; return y; }
 function getMonthZhi(m,d){ if (m===1&&d<6) return 0; let best=CUTOFFS[0]; for(const c of CUTOFFS){ if(c.m<m||(c.m===m&&c.d<=d)) best=c; } return best.zhi; }
 function mod(n,m){ return ((n%m)+m)%m; }
 
+/* ══ 음력 → 양력 변환 (브라우저 내장 공식 음력 달력(dangi) 데이터 사용) ══ */
+function dangiParts(date) {
+  const fmt = new Intl.DateTimeFormat('en-US-u-ca-dangi', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  const parts = fmt.formatToParts(date);
+  const get = (type) => parts.find(p => p.type === type)?.value;
+  return { year: get('relatedYear'), month: get('month'), day: get('day') };
+}
+function lunarToSolar(year, month, day, isLeap) {
+  const target = String(month) + (isLeap ? 'bis' : '');
+  const start = new Date(year - 1, 10, 1);
+  const end = new Date(year + 1, 2, 1);
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const p = dangiParts(d);
+    if (p.year === String(year) && p.month === target && p.day === String(day)) return new Date(d);
+  }
+  return null;
+}
+
 function calcSajuData(dateVal, hourZhiIdx) {
   const [y,m,d] = dateVal.split('-').map(Number);
   const yearForPillar = getYearForPillar(y,m,d);
@@ -436,14 +454,25 @@ function toggleSaju(id, birthDate, birthTime, birthCalendar) {
   const isShown = panel.classList.contains('show');
   if (isShown) { panel.classList.remove('show'); panel.innerHTML=''; return; }
   if (!birthDate) { panel.innerHTML = '<p style="font-size:0.8rem;color:var(--ink-muted);">생년월일 정보가 없습니다.</p>'; panel.classList.add('show'); return; }
+
+  let dateForCalc = birthDate;
+  let convertNote = '';
   if (birthCalendar === 'lunar') {
-    panel.innerHTML = '<p style="font-size:0.82rem;color:#8a3030;line-height:1.7;">⚠ 음력 생년월일은 자동 계산되지 않습니다. 포털에서 "음력 양력 변환"으로 검색해 양력으로 바꾼 뒤, <a href="admin-saju.html" target="_blank" style="color:var(--gold);">사주 계산기</a>에서 양력으로 다시 계산해주세요.</p>';
-    panel.classList.add('show');
-    return;
+    const [ly, lm, ld] = birthDate.split('-').map(Number);
+    const solarDate = lunarToSolar(ly, lm, ld, false);
+    if (!solarDate) {
+      panel.innerHTML = '<p style="font-size:0.82rem;color:#8a3030;line-height:1.7;">⚠ 음력 날짜 변환에 실패했습니다 (윤달일 가능성). <a href="admin-saju.html" target="_blank" style="color:var(--gold);">사주 계산기</a>에서 윤달 여부를 선택해 직접 계산해주세요.</p>';
+      panel.classList.add('show');
+      return;
+    }
+    const y = solarDate.getFullYear(), m = solarDate.getMonth()+1, d = solarDate.getDate();
+    dateForCalc = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    convertNote = `<p style="font-size:0.78rem;color:var(--gold);margin-bottom:0.8rem;">음력 ${birthDate} → 양력 ${dateForCalc} 변환되어 계산되었습니다.</p>`;
   }
+
   const hourZhiIdx = BIRTH_TIME_TO_ZHI.hasOwnProperty(birthTime) ? BIRTH_TIME_TO_ZHI[birthTime] : null;
-  const pillars = calcSajuData(birthDate, hourZhiIdx);
-  panel.innerHTML = renderSaju(pillars);
+  const pillars = calcSajuData(dateForCalc, hourZhiIdx);
+  panel.innerHTML = convertNote + renderSaju(pillars);
   panel.classList.add('show');
 }
 

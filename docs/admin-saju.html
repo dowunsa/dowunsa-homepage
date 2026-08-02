@@ -80,12 +80,15 @@
       <input type="date" id="birth_date">
       <div style="display:flex;gap:1.2rem;margin-top:0.6rem;">
         <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--ink-light);cursor:pointer;">
-          <input type="radio" name="birth_calendar" value="solar" checked> 양력
+          <input type="radio" name="birth_calendar" value="solar" checked onchange="toggleLeapCheckbox()"> 양력
         </label>
         <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--ink-light);cursor:pointer;">
-          <input type="radio" name="birth_calendar" value="lunar"> 음력
+          <input type="radio" name="birth_calendar" value="lunar" onchange="toggleLeapCheckbox()"> 음력
         </label>
       </div>
+      <label id="leapWrap" style="display:none;align-items:center;gap:0.4rem;font-size:0.76rem;color:var(--ink-muted);margin-top:0.5rem;cursor:pointer;">
+        <input type="checkbox" id="isLeapMonth"> 윤달(閏月)이었어요
+      </label>
     </div>
     <div class="field">
       <label for="birth_time">태어난 시간</label>
@@ -110,6 +113,7 @@
   <button class="calc-btn" onclick="calcSaju()">사주 계산하기</button>
 
   <div class="result" id="result">
+    <div id="convertNote"></div>
     <div class="pillars" id="pillars"></div>
     <div class="elements" id="elements"></div>
     <div class="interp" id="interp"></div>
@@ -165,22 +169,61 @@ function getMonthZhi(m, d) {
 
 function mod(n, m) { return ((n % m) + m) % m; }
 
+function toggleLeapCheckbox() {
+  const isLunar = document.querySelector('input[name="birth_calendar"]:checked').value === 'lunar';
+  document.getElementById('leapWrap').style.display = isLunar ? 'flex' : 'none';
+}
+
+/* ══ 음력 → 양력 변환 (브라우저 내장 공식 음력 달력(dangi) 데이터 사용, 임의 추정 데이터 아님) ══ */
+function dangiParts(date) {
+  const fmt = new Intl.DateTimeFormat('en-US-u-ca-dangi', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  const parts = fmt.formatToParts(date);
+  const get = (type) => parts.find(p => p.type === type)?.value;
+  return { year: get('relatedYear'), month: get('month'), day: get('day') };
+}
+function lunarToSolar(year, month, day, isLeap) {
+  const target = String(month) + (isLeap ? 'bis' : '');
+  const start = new Date(year - 1, 10, 1);
+  const end = new Date(year + 1, 2, 1);
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const p = dangiParts(d);
+    if (p.year === String(year) && p.month === target && p.day === String(day)) {
+      return new Date(d);
+    }
+  }
+  return null;
+}
+
 function calcSaju() {
   const dateVal = document.getElementById('birth_date').value;
   if (!dateVal) { alert('생년월일을 입력해주세요.'); return; }
   const calendarType = document.querySelector('input[name="birth_calendar"]:checked').value;
 
-  if (calendarType === 'lunar') {
-    document.getElementById('pillars').innerHTML = '';
-    document.getElementById('elements').innerHTML = '';
-    document.getElementById('interp').innerHTML =
-      '⚠ 음력 생년월일은 이 계산기에서 자동 변환하지 않습니다 (정확한 만세력 데이터 없이 임의로 계산하면 틀릴 위험이 있어 일부러 막아두었습니다).<br><br>' +
-      '포털에서 <strong>"음력 양력 변환"</strong>으로 검색해 양력 날짜로 바꾸신 뒤, 위에서 <strong>양력</strong>을 선택하고 그 날짜로 다시 계산해주세요.';
-    document.getElementById('result').classList.add('show');
-    return;
-  }
+  let y, m, d;
+  let convertNote = '';
 
-  const [y, m, d] = dateVal.split('-').map(Number);
+  if (calendarType === 'lunar') {
+    const [ly, lm, ld] = dateVal.split('-').map(Number);
+    const isLeap = document.getElementById('isLeapMonth').checked;
+    let solarDate;
+    try {
+      solarDate = lunarToSolar(ly, lm, ld, isLeap);
+    } catch (e) {
+      solarDate = null;
+    }
+    if (!solarDate) {
+      document.getElementById('convertNote').innerHTML = '';
+      document.getElementById('pillars').innerHTML = '';
+      document.getElementById('elements').innerHTML = '';
+      document.getElementById('interp').innerHTML = '⚠ 입력하신 음력 날짜(' + ly + '년 ' + lm + '월' + (isLeap?'(윤달)':'') + ' ' + ld + '일)를 변환하지 못했습니다. 날짜가 맞는지, 윤달 여부를 다시 확인해주세요.';
+      document.getElementById('result').classList.add('show');
+      return;
+    }
+    y = solarDate.getFullYear(); m = solarDate.getMonth() + 1; d = solarDate.getDate();
+    convertNote = `<p class="note" style="margin-top:0;margin-bottom:1rem;color:var(--gold);">음력 ${ly}년 ${lm}월${isLeap?'(윤달)':''} ${ld}일 → 양력 ${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')} 로 변환되어 계산되었습니다.</p>`;
+  } else {
+    [y, m, d] = dateVal.split('-').map(Number);
+  }
   const timeVal = document.getElementById('birth_time').value;
   const hourKnown = timeVal !== '모름';
   const hourZhiIdx = hourKnown ? parseInt(timeVal, 10) : null;
@@ -270,6 +313,7 @@ function calcSaju() {
   interpText += ' (이 해석은 오행 개수만을 근거로 한 단순 참고용 메모이며, 실제 상담은 명현 대표님의 전문적 판단을 따릅니다.)';
 
   document.getElementById('interp').innerHTML = interpText;
+  document.getElementById('convertNote').innerHTML = convertNote;
   document.getElementById('result').classList.add('show');
 }
 </script>
