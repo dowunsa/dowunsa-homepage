@@ -65,6 +65,8 @@
   .card-btn { font-size: 0.75rem; border: 0.5px solid var(--border); background: none; padding: 0.4rem 0.9rem; cursor: pointer; font-family: var(--sans); color: var(--ink-light); }
   .card-btn:hover { border-color: var(--gold); color: var(--gold); }
   .card-btn.primary { border-color: var(--sage); color: var(--sage); }
+  .card-btn.danger { border-color: #B84040; color: #B84040; }
+  .card-btn.danger:hover { background: #B84040; color: white; }
   .saju-panel { margin-top: 1rem; padding-top: 1rem; border-top: 0.5px dashed var(--border); display: none; }
   .saju-panel.show { display: block; }
   .pillars { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); margin-bottom: 1rem; }
@@ -444,6 +446,7 @@ function renderCard(id, r) {
       <button class="card-btn primary" onclick="openConfirmModal('${id}')">${isConfirmed ? '확정 일정 수정' : '예약 확정'}</button>
       <button class="card-btn" onclick="toggleSaju('${id}','${r.birth_date||''}','${r.birth_time||''}','${r.birth_calendar||'solar'}')">사주 보기</button>
       <button class="card-btn" onclick="toggleDone('${id}', ${!isDone})">${isDone ? '완료 취소' : '완료 처리'}</button>
+      <button class="card-btn danger" onclick="deleteReservation('${id}')">삭제</button>
     </div>
     <div class="saju-panel" id="saju-${id}"></div>
   </div>`;
@@ -478,6 +481,19 @@ function toggleSaju(id, birthDate, birthTime, birthCalendar) {
 
 function toggleDone(id, done) {
   firebase.firestore().collection('reservations').doc(id).update({ status: done ? 'done' : 'new' });
+}
+
+function deleteReservation(id) {
+  if (!confirm('이 예약 신청을 완전히 삭제할까요? 되돌릴 수 없습니다.')) return;
+  const db = firebase.firestore();
+  db.collection('reservations').doc(id).delete().then(() => {
+    // 연결된 확정 일정이 있으면 함께 삭제
+    return db.collection('appointments').where('reservationId', '==', id).get();
+  }).then((snap) => {
+    const batch = firebase.firestore().batch();
+    snap.forEach(doc => batch.delete(doc.ref));
+    return batch.commit();
+  }).catch((err) => { console.error(err); alert('삭제에 실패했습니다.'); });
 }
 
 /* ══ 예약 확정 모달 ══ */
