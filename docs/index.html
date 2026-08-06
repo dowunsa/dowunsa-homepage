@@ -72,6 +72,7 @@
     transition: all 0.3s;
   }
   .nav-cta:hover { background: var(--gold); color: var(--cream); }
+  .nav-actions { display: flex; align-items: center; gap: 1rem; }
   .music-toggle {
     width: 2.2rem; height: 2.2rem;
     border: 0.5px solid var(--border);
@@ -549,8 +550,10 @@
     <li><a href="#process">상담 과정</a></li>
     <li><a href="about.html">대표 소개</a></li>
   </ul>
-  <button class="music-toggle" id="musicToggle" onclick="toggleBgMusic()" title="배경음악 켜기/끄기">♪</button>
-  <a href="reservation.html" class="nav-cta">상담 예약</a>
+  <div class="nav-actions">
+    <button class="music-toggle" id="musicToggle" onclick="toggleBgMusic()" title="배경음악 켜기/끄기">♪</button>
+    <a href="reservation.html" class="nav-cta">상담 예약</a>
+  </div>
 </nav>
 <audio id="bgMusic" src="assets/audio/ambient.mp3" loop preload="none"></audio>
 
