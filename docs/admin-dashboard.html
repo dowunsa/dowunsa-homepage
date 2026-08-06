@@ -80,6 +80,12 @@
   .elements { display: flex; gap: 0.4rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
   .el-chip { flex: 1; min-width: 50px; background: var(--sage-light); text-align: center; padding: 0.6rem 0.3rem; font-size: 0.85rem; color: #4a5a49; font-weight: 700; }
   .interp { font-size: 0.9rem; color: var(--ink); background: var(--gold-light); padding: 0.9rem 1.1rem; line-height: 1.8; font-weight: 500; }
+  .daeun-head { font-size: 0.8rem; color: var(--ink-light); margin: 1rem 0 0.6rem; font-weight: 600; }
+  .daeun-row { display: flex; gap: 1px; background: var(--border); overflow-x: auto; }
+  .daeun-col { background: white; flex: 1; min-width: 56px; text-align: center; padding: 0.5rem 0.25rem; }
+  .daeun-age { font-size: 0.62rem; color: var(--ink-muted); margin-bottom: 0.3rem; }
+  .daeun-hanja { font-family: var(--serif); font-size: 1.05rem; color: var(--ink); font-weight: 600; }
+  .daeun-kr { font-size: 0.58rem; color: #8a6a2f; margin-top: 0.15rem; font-weight: 600; }
 
   /* ── 캘린더 ── */
   .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
@@ -434,6 +440,7 @@ function renderCard(id, r) {
     </div>
     <div class="card-grid">
       <div><span>연락처</span>${escapeHtml(r.phone||'-')}</div>
+      <div><span>성별</span>${r.gender==='male'?'남성':r.gender==='female'?'여성':'-'}</div>
       <div><span>선호 연락</span>${escapeHtml(r.contact_pref||'-')}</div>
       <div><span>생년월일</span>${escapeHtml(r.birth_date||'-')} ${r.birth_date ? `(${r.birth_calendar==='lunar'?'음력':'양력'})` : ''}</div>
       <div><span>태어난 시간</span>${escapeHtml(r.birth_time||'-')}</div>
@@ -445,7 +452,7 @@ function renderCard(id, r) {
     ${r.concern ? `<div class="card-concern">${escapeHtml(r.concern)}</div>` : ''}
     <div class="card-actions">
       <button class="card-btn primary" onclick="openConfirmModal('${id}')">${isConfirmed ? '확정 일정 수정' : '예약 확정'}</button>
-      <button class="card-btn" onclick="toggleSaju('${id}','${r.birth_date||''}','${r.birth_time||''}','${r.birth_calendar||'solar'}')">사주 보기</button>
+      <button class="card-btn" onclick="toggleSaju('${id}','${r.birth_date||''}','${r.birth_time||''}','${r.birth_calendar||'solar'}','${r.gender||'male'}')">사주 보기</button>
       <button class="card-btn" onclick="toggleDone('${id}', ${!isDone})">${isDone ? '완료 취소' : '완료 처리'}</button>
       <button class="card-btn danger" onclick="deleteReservation('${id}')">삭제</button>
     </div>
@@ -453,7 +460,47 @@ function renderCard(id, r) {
   </div>`;
 }
 
-function toggleSaju(id, birthDate, birthTime, birthCalendar) {
+function nearestCutoffJDN(y, m, d, forward) {
+  const birthJDN = toJDN(y, m, d);
+  const candidates = [];
+  [y - 1, y, y + 1].forEach((yr) => { CUTOFFS.forEach((c) => candidates.push(toJDN(yr, c.m, c.d))); });
+  candidates.sort((a, b) => a - b);
+  if (forward) return candidates.find((c) => c > birthJDN);
+  let prev = null;
+  for (const c of candidates) { if (c < birthJDN) prev = c; else break; }
+  return prev;
+}
+
+function renderDaeun(dateForCalc, gender) {
+  const [y, m, d] = dateForCalc.split('-').map(Number);
+  const yearForPillar = getYearForPillar(y, m, d);
+  const yearGanIdx = mod(yearForPillar - 4, 10);
+  const monthZhiIdx = getMonthZhi(m, d);
+  const monthStartGan = mod(mod(yearGanIdx, 5) * 2 + 2, 10);
+  const monthGanIdx = mod(monthStartGan + mod(monthZhiIdx - 2, 12), 10);
+
+  const isYangYear = yearGanIdx % 2 === 0;
+  const forward = (isYangYear && gender === 'male') || (!isYangYear && gender === 'female');
+  const birthJDN = toJDN(y, m, d);
+  const cutoffJDN = nearestCutoffJDN(y, m, d, forward);
+  const daeunSu = Math.max(1, Math.round(Math.abs(cutoffJDN - birthJDN) / 3));
+
+  let ganIdx = monthGanIdx, zhiIdx = monthZhiIdx;
+  const cols = [];
+  for (let i = 0; i < 8; i++) {
+    ganIdx = mod(ganIdx + (forward ? 1 : -1), 10);
+    zhiIdx = mod(zhiIdx + (forward ? 1 : -1), 12);
+    cols.push(`<div class="daeun-col">
+      <div class="daeun-age">${daeunSu + i * 10}세~</div>
+      <div class="daeun-hanja">${GAN_HJ[ganIdx]}${ZHI_HJ[zhiIdx]}</div>
+      <div class="daeun-kr">${GAN_KR[ganIdx]}${ZHI_KR[zhiIdx]}</div>
+    </div>`);
+  }
+  return `<p class="daeun-head">대운 (${forward ? '순행' : '역행'} · ${gender === 'male' ? '남성' : '여성'} · 대운수 약 ${daeunSu}세)</p>
+    <div class="daeun-row">${cols.join('')}</div>`;
+}
+
+function toggleSaju(id, birthDate, birthTime, birthCalendar, gender) {
   const panel = document.getElementById('saju-' + id);
   const isShown = panel.classList.contains('show');
   if (isShown) { panel.classList.remove('show'); panel.innerHTML=''; return; }
@@ -476,7 +523,7 @@ function toggleSaju(id, birthDate, birthTime, birthCalendar) {
 
   const hourZhiIdx = BIRTH_TIME_TO_ZHI.hasOwnProperty(birthTime) ? BIRTH_TIME_TO_ZHI[birthTime] : null;
   const pillars = calcSajuData(dateForCalc, hourZhiIdx);
-  panel.innerHTML = convertNote + renderSaju(pillars);
+  panel.innerHTML = convertNote + renderSaju(pillars) + renderDaeun(dateForCalc, gender || 'male');
   panel.classList.add('show');
 }
 

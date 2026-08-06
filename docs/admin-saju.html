@@ -55,6 +55,12 @@
   .el-count { font-size: 0.88rem; color: var(--ink-light); margin-top: 0.3rem; font-weight: 600; }
   .interp { background: var(--gold-light); border-left: 2px solid var(--gold); padding: 1.3rem 1.5rem; font-size: 1rem; color: var(--ink); line-height: 1.9; font-weight: 500; }
   .note { margin-top: 1.5rem; font-size: 0.85rem; color: var(--ink-muted); line-height: 1.8; }
+  .daeun-head { font-size: 0.85rem; color: var(--ink-light); margin: 1.5rem 0 0.8rem; font-weight: 600; }
+  .daeun-row { display: flex; gap: 1px; background: var(--border); overflow-x: auto; }
+  .daeun-col { background: white; flex: 1; min-width: 62px; text-align: center; padding: 0.7rem 0.3rem; }
+  .daeun-age { font-size: 0.72rem; color: var(--ink-muted); margin-bottom: 0.4rem; }
+  .daeun-hanja { font-family: var(--serif); font-size: 1.3rem; color: var(--ink); font-weight: 600; }
+  .daeun-kr { font-size: 0.68rem; color: #8a6a2f; margin-top: 0.2rem; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -108,6 +114,17 @@
         <option value="11">해시 (21:00 ~ 22:59)</option>
       </select>
     </div>
+    <div class="field">
+      <label>성별 <span style="font-weight:400;color:var(--ink-muted);">(대운 방향 계산에 필요)</span></label>
+      <div style="display:flex;gap:1.2rem;margin-top:0.6rem;">
+        <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--ink-light);cursor:pointer;">
+          <input type="radio" name="gender" value="male" checked> 남성
+        </label>
+        <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.8rem;color:var(--ink-light);cursor:pointer;">
+          <input type="radio" name="gender" value="female"> 여성
+        </label>
+      </div>
+    </div>
   </div>
 
   <button class="calc-btn" onclick="calcSaju()">사주 계산하기</button>
@@ -117,7 +134,8 @@
     <div class="pillars" id="pillars"></div>
     <div class="elements" id="elements"></div>
     <div class="interp" id="interp"></div>
-    <p class="note">참고: 시주가 비어있으면 태어난 시간이 '모름'으로 선택된 경우입니다. 월주는 절기(태양력) 기준 근사치로 계산되었습니다.</p>
+    <div id="daeunSection"></div>
+    <p class="note">참고: 시주가 비어있으면 태어난 시간이 '모름'으로 선택된 경우입니다. 월주는 절기(태양력) 기준 근사치로 계산되었습니다. 대운수(시작 나이)도 같은 절기 근사치를 사용하므로 ±1~2세 오차가 있을 수 있습니다.</p>
   </div>
 </div>
 
@@ -215,6 +233,7 @@ function calcSaju() {
       document.getElementById('convertNote').innerHTML = '';
       document.getElementById('pillars').innerHTML = '';
       document.getElementById('elements').innerHTML = '';
+      document.getElementById('daeunSection').innerHTML = '';
       document.getElementById('interp').innerHTML = '⚠ 입력하신 음력 날짜(' + ly + '년 ' + lm + '월' + (isLeap?'(윤달)':'') + ' ' + ld + '일)를 변환하지 못했습니다. 날짜가 맞는지, 윤달 여부를 다시 확인해주세요.';
       document.getElementById('result').classList.add('show');
       return;
@@ -314,7 +333,53 @@ function calcSaju() {
 
   document.getElementById('interp').innerHTML = interpText;
   document.getElementById('convertNote').innerHTML = convertNote;
+
+  // ── 대운(大運) ──
+  const gender = document.querySelector('input[name="gender"]:checked').value;
+  document.getElementById('daeunSection').innerHTML = renderDaeun(y, m, d, yearGanIdx, monthGanIdx, monthZhiIdx, gender);
+
   document.getElementById('result').classList.add('show');
+}
+
+function nearestCutoffJDN(y, m, d, forward) {
+  const birthJDN = toJDN(y, m, d);
+  const candidates = [];
+  [y - 1, y, y + 1].forEach((yr) => {
+    CUTOFFS.forEach((c) => candidates.push(toJDN(yr, c.m, c.d)));
+  });
+  candidates.sort((a, b) => a - b);
+  if (forward) {
+    return candidates.find((c) => c > birthJDN);
+  }
+  let prev = null;
+  for (const c of candidates) { if (c < birthJDN) prev = c; else break; }
+  return prev;
+}
+
+function renderDaeun(y, m, d, yearGanIdx, monthGanIdx, monthZhiIdx, gender) {
+  const isYangYear = yearGanIdx % 2 === 0;
+  const forward = (isYangYear && gender === 'male') || (!isYangYear && gender === 'female');
+  const birthJDN = toJDN(y, m, d);
+  const cutoffJDN = nearestCutoffJDN(y, m, d, forward);
+  const dayDiff = Math.abs(cutoffJDN - birthJDN);
+  const daeunSu = Math.max(1, Math.round(dayDiff / 3));
+
+  let ganIdx = monthGanIdx, zhiIdx = monthZhiIdx;
+  const steps = [];
+  for (let i = 0; i < 8; i++) {
+    ganIdx = mod(ganIdx + (forward ? 1 : -1), 10);
+    zhiIdx = mod(zhiIdx + (forward ? 1 : -1), 12);
+    steps.push({ gan: ganIdx, zhi: zhiIdx, age: daeunSu + i * 10 });
+  }
+
+  const cols = steps.map(s => `<div class="daeun-col">
+    <div class="daeun-age">${s.age}세~</div>
+    <div class="daeun-hanja">${GAN_HJ[s.gan]}${ZHI_HJ[s.zhi]}</div>
+    <div class="daeun-kr">${GAN_KR[s.gan]}${ZHI_KR[s.zhi]}</div>
+  </div>`).join('');
+
+  return `<p class="daeun-head">대운 (${forward ? '순행' : '역행'} · ${gender === 'male' ? '남성' : '여성'} · 대운수 약 ${daeunSu}세)</p>
+    <div class="daeun-row">${cols}</div>`;
 }
 </script>
 </body>

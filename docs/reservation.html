@@ -339,6 +339,20 @@
         </select>
       </div>
 
+      <div class="field">
+        <label>성별 <span class="req">*</span> <span style="font-weight:400;color:var(--ink-muted);">(사주 대운 방향 계산에 필요합니다)</span></label>
+        <div class="check-group" style="flex-direction:row;gap:1.2rem;">
+          <label class="check-item" style="gap:0.4rem;">
+            <input type="radio" name="gender" value="male" required>
+            <span class="check-label">남성</span>
+          </label>
+          <label class="check-item" style="gap:0.4rem;">
+            <input type="radio" name="gender" value="female" required>
+            <span class="check-label">여성</span>
+          </label>
+        </div>
+      </div>
+
       <div class="field-row">
         <div class="field">
           <label for="birth_date">생년월일 <span class="req">*</span></label>
@@ -535,6 +549,7 @@
       name: document.getElementById('name').value,
       phone: document.getElementById('phone').value,
       contact_pref: document.getElementById('contact_pref').value,
+      gender: document.querySelector('input[name="gender"]:checked').value,
       birth_date: document.getElementById('birth_date').value,
       birth_calendar: document.querySelector('input[name="birth_calendar"]:checked').value,
       birth_time: document.getElementById('birth_time').value,
