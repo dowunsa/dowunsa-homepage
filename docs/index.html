@@ -72,6 +72,19 @@
     transition: all 0.3s;
   }
   .nav-cta:hover { background: var(--gold); color: var(--cream); }
+  .music-toggle {
+    width: 2.2rem; height: 2.2rem;
+    border: 0.5px solid var(--border);
+    background: none;
+    color: var(--ink-light);
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .music-toggle:hover { border-color: var(--gold); color: var(--gold); }
+  .music-toggle.playing { color: var(--gold); border-color: var(--gold); }
 
   /* HERO */
   .hero {
@@ -536,8 +549,10 @@
     <li><a href="#process">상담 과정</a></li>
     <li><a href="about.html">대표 소개</a></li>
   </ul>
+  <button class="music-toggle" id="musicToggle" onclick="toggleBgMusic()" title="배경음악 켜기/끄기">♪</button>
   <a href="reservation.html" class="nav-cta">상담 예약</a>
 </nav>
+<audio id="bgMusic" src="assets/audio/ambient.mp3" loop preload="none"></audio>
 
 <section class="hero">
   <div class="hero-left">
@@ -766,6 +781,43 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
   }
+
+  /* ══ 배경음악: 입장 시 자동 재생 시도, 브라우저가 막으면 첫 클릭/스크롤 시 재생 ══ */
+  (function () {
+    const audio = document.getElementById('bgMusic');
+    const btn = document.getElementById('musicToggle');
+    let userPaused = false;
+
+    audio.addEventListener('error', () => { btn.style.display = 'none'; });
+
+    function setPlayingUI(isPlaying) {
+      btn.classList.toggle('playing', isPlaying);
+      btn.textContent = isPlaying ? '♫' : '♪';
+    }
+
+    function tryPlay() {
+      audio.play().then(() => setPlayingUI(true)).catch(() => setPlayingUI(false));
+    }
+
+    tryPlay();
+
+    const resumeOnce = () => {
+      if (!userPaused && audio.paused) tryPlay();
+      ['click', 'scroll', 'touchstart', 'keydown'].forEach(ev => document.removeEventListener(ev, resumeOnce));
+    };
+    ['click', 'scroll', 'touchstart', 'keydown'].forEach(ev => document.addEventListener(ev, resumeOnce, { once: true }));
+
+    window.toggleBgMusic = function () {
+      if (audio.paused) {
+        userPaused = false;
+        tryPlay();
+      } else {
+        audio.pause();
+        userPaused = true;
+        setPlayingUI(false);
+      }
+    };
+  })();
 </script>
 </body>
 </html>
