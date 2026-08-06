@@ -54,52 +54,54 @@
 
   .setup-warn { max-width: 500px; margin: 4rem auto; text-align: center; font-size: 0.85rem; color: var(--ink-muted); line-height: 2; padding: 0 1.5rem; }
 
-  /* ── 인쇄용 (A4) ── */
+  /* ── 인쇄용 (A4, 정확히 1페이지) ── */
   #printArea { display: none; }
   @media print {
     @page { size: A4; margin: 0; }
-    body * { visibility: hidden; }
-    #printArea, #printArea * { visibility: visible; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    #printArea { display: block; position: absolute; top: 0; left: 0; width: 100%; }
+    html, body { margin: 0; padding: 0; height: 297mm; overflow: hidden; }
+    body > *:not(#printArea) { display: none !important; }
+    #printArea { display: block !important; }
+    #printArea, #printArea * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   }
   .doc-frame {
     position: relative;
     width: 210mm;
-    min-height: 297mm;
+    height: 297mm;
     background-image: url('assets/images/pdf-bg.png');
-    background-size: 100% 100%;
+    background-size: 210mm 297mm;
     background-repeat: no-repeat;
-    padding: 86mm 20mm 20mm;
+    padding: 78mm 20mm 16mm;
     box-sizing: border-box;
+    overflow: hidden;
   }
   .doc-maintitle { font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--ink); text-align: center; letter-spacing: 0.3em; margin: 0 0 1rem; position: relative; z-index: 1; }
   .doc-date-row { text-align: right; font-size: 0.78rem; color: var(--ink-light); margin-bottom: 0.6rem; position: relative; z-index: 1; }
 
-  .doc-sec-head { display: flex; align-items: center; gap: 0.6rem; margin: 1.5rem 0 0.9rem; position: relative; z-index: 1; }
-  .doc-num { width: 24px; height: 24px; border-radius: 50%; background: var(--gold); color: white; font-size: 0.72rem; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
-  .doc-sec-title2 { font-family: var(--serif); font-size: 1.02rem; font-weight: 700; color: var(--ink); }
-  .doc-sec-hint { font-size: 0.7rem; color: var(--ink-muted); }
+  .doc-sec-head { display: flex; align-items: center; gap: 0.6rem; margin: 0.9rem 0 0.55rem; position: relative; z-index: 1; }
+  .doc-num { width: 22px; height: 22px; border-radius: 50%; background: var(--gold); color: white; font-size: 0.68rem; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+  .doc-sec-title2 { font-family: var(--serif); font-size: 0.98rem; font-weight: 700; color: var(--ink); }
+  .doc-sec-hint { font-size: 0.68rem; color: var(--ink-muted); }
 
-  .doc-field-pair { display: flex; gap: 1.8rem; margin-bottom: 0.85rem; position: relative; z-index: 1; }
+  .doc-field-pair { display: flex; gap: 1.8rem; margin-bottom: 0.5rem; position: relative; z-index: 1; }
   .doc-field { display: flex; align-items: flex-end; gap: 0.6rem; flex: 1; }
-  .doc-field-label { font-size: 0.8rem; color: var(--ink); font-weight: 500; white-space: nowrap; }
-  .doc-field-value { flex: 1; border-bottom: 1px dotted rgba(30,28,24,0.55); padding-bottom: 0.25rem; font-size: 0.83rem; color: var(--ink); min-height: 1.3em; }
+  .doc-field-label { font-size: 0.78rem; color: var(--ink); font-weight: 500; white-space: nowrap; }
+  .doc-field-value { flex: 1; border-bottom: 1px dotted rgba(30,28,24,0.55); padding-bottom: 0.2rem; font-size: 0.8rem; color: var(--ink); min-height: 1.2em; }
 
-  .doc-box { position: relative; background: rgba(184,151,90,0.08); border: 1px solid rgba(184,151,90,0.25); border-radius: 6px; padding: 1rem 1.2rem; min-height: 60px; margin-bottom: 0.3rem; z-index: 1; }
-  .doc-box-icon { position: absolute; bottom: 0.5rem; right: 0.8rem; font-size: 1.3rem; color: rgba(184,151,90,0.35); }
-  .doc-box-text { font-size: 0.84rem; line-height: 1.85; color: var(--ink-light); white-space: pre-wrap; position: relative; z-index: 1; }
+  .doc-box { position: relative; background: rgba(184,151,90,0.08); border: 1px solid rgba(184,151,90,0.25); border-radius: 6px; padding: 0.7rem 1rem; min-height: 40px; margin-bottom: 0.25rem; z-index: 1; }
+  .doc-box-icon { position: absolute; bottom: 0.4rem; right: 0.7rem; font-size: 1.1rem; color: rgba(184,151,90,0.35); }
+  .doc-box-text { font-size: 0.8rem; line-height: 1.7; color: var(--ink-light); white-space: pre-wrap; position: relative; z-index: 1; }
 
-  .doc-divider { display: flex; align-items: center; gap: 0.6rem; margin: 1.4rem 0; position: relative; z-index: 1; }
+  .doc-divider { display: flex; align-items: center; gap: 0.6rem; margin: 0.7rem 0; position: relative; z-index: 1; }
   .doc-divider::before, .doc-divider::after { content: ''; flex: 1; height: 1px; background: rgba(184,151,90,0.35); }
-  .doc-divider span { color: var(--gold); font-size: 0.75rem; }
+  .doc-divider span { color: var(--gold); font-size: 0.7rem; }
 
-  .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 0.4rem; position: relative; z-index: 1; }
-  .doc-table th, .doc-table td { border: 1px solid rgba(184,151,90,0.35); padding: 0.5rem 0.7rem; font-size: 0.8rem; text-align: center; }
+  .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 0.3rem; position: relative; z-index: 1; }
+  .doc-table th, .doc-table td { border: 1px solid rgba(184,151,90,0.35); padding: 0.35rem 0.6rem; font-size: 0.76rem; text-align: center; }
   .doc-table th { background: rgba(184,151,90,0.12); font-weight: 600; color: var(--ink); }
   .doc-table td { background: rgba(255,255,255,0.4); color: var(--ink-light); }
 
-  .doc-closing { text-align: center; font-size: 0.82rem; color: var(--ink-light); margin: 1.8rem 0 1rem; position: relative; z-index: 1; }
-  .doc-footer-brand { text-align: center; font-size: 0.75rem; color: var(--ink-muted); letter-spacing: 0.15em; position: relative; z-index: 1; }
+  .doc-closing { text-align: center; font-size: 0.78rem; color: var(--ink-light); margin: 0.9rem 0 0.5rem; position: relative; z-index: 1; }
+  .doc-footer-brand { text-align: center; font-size: 0.72rem; color: var(--ink-muted); letter-spacing: 0.15em; position: relative; z-index: 1; }
 </style>
 </head>
 <body>
@@ -129,6 +131,13 @@
         <div class="f"><label>이름 (한글)</label><input id="naming_name_kr"></div>
         <div class="f"><label>이름 (한자)</label><input id="naming_name_hj"></div>
       </div>
+      <div class="field-row3" style="margin-bottom:0.6rem;">
+        <div class="f"><label>성 획수</label><input type="number" id="naming_stroke_s" min="1" placeholder="예: 김=8"></div>
+        <div class="f"><label>이름 첫자 획수</label><input type="number" id="naming_stroke_g1" min="1"></div>
+        <div class="f"><label>이름 둘째자 획수 (없으면 비움)</label><input type="number" id="naming_stroke_g2" min="1"></div>
+      </div>
+      <p class="hint" style="margin-top:0;margin-bottom:0.8rem;">획수는 한자 자전 기준 원획(原劃)을 직접 입력해주세요 — 정확한 판단을 위해 자동 계산하지 않습니다.</p>
+      <button type="button" class="slot-btn" style="border-color:var(--gold);color:var(--gold);padding:0.6rem 1.2rem;margin-bottom:1rem;cursor:pointer;font-size:0.8rem;" onclick="draftNaming()">✦ AI 초안 생성 (수리·원형이정·소견)</button>
       <div class="f" style="margin-bottom:0.9rem;"><label>수리·오행</label><textarea id="naming_suri" placeholder="예: 원격 15(토) · 형격 23(화) · 이격 9(수) · 정격 24(화)"></textarea></div>
       <div class="f" style="margin-bottom:0.9rem;"><label>원형이정(元亨利貞)</label><textarea id="naming_wonhyeong" placeholder="원격/형격/이격/정격 각 의미 및 길흉 해설"></textarea></div>
       <div class="f"><label>작명 소견</label><textarea id="naming_gyeon" placeholder="종합 소견"></textarea></div>
@@ -155,6 +164,12 @@
     </div>
     <div class="field-block">
       <h3>결혼택일 후보 (5가지, 등급별)</h3>
+      <div class="field-row2">
+        <div class="f"><label>탐색 시작일</label><input type="date" id="mcand_start"></div>
+        <div class="f"><label>탐색 종료일</label><input type="date" id="mcand_end"></div>
+      </div>
+      <p class="hint" style="margin-top:0;margin-bottom:0.6rem;">신랑·신부 사주(일지 충 회피, 오행 상생, 손없는날)를 기준으로 후보를 골라줍니다 — 참고용 초안이며 최종 택일은 직접 판단해주세요.</p>
+      <button type="button" class="slot-btn" style="border-color:var(--gold);color:var(--gold);padding:0.6rem 1.2rem;margin-bottom:1rem;cursor:pointer;font-size:0.8rem;" onclick="draftCandidates('marriage')">✦ AI 초안으로 5가지 후보 찾기</button>
       <div id="marriage-candidates"></div>
     </div>
     <button class="gen-btn" onclick="generateDoc('marriage')">혼인택일 상담서 PDF로 저장</button>
@@ -172,6 +187,12 @@
     </div>
     <div class="field-block">
       <h3>제왕절개일자 후보 (3가지, 등급별)</h3>
+      <div class="field-row2">
+        <div class="f"><label>탐색 시작일</label><input type="date" id="bcand_start"></div>
+        <div class="f"><label>탐색 종료일</label><input type="date" id="bcand_end"></div>
+      </div>
+      <p class="hint" style="margin-top:0;margin-bottom:0.6rem;">아빠·엄마 사주(일지 충 회피, 오행 상생)를 기준으로 후보를 골라줍니다 — 참고용 초안이며 최종 판단은 직접 해주세요.</p>
+      <button type="button" class="slot-btn" style="border-color:var(--gold);color:var(--gold);padding:0.6rem 1.2rem;margin-bottom:1rem;cursor:pointer;font-size:0.8rem;" onclick="draftCandidates('birth')">✦ AI 초안으로 3가지 후보 찾기</button>
       <div id="birth-candidates"></div>
     </div>
     <button class="gen-btn" onclick="generateDoc('birth')">출산예정일 상담서 PDF로 저장</button>
@@ -204,6 +225,11 @@ const GAN_KR = ['갑','을','병','정','무','기','경','신','임','계'];
 const GAN_HJ = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 const ZHI_KR = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
 const ZHI_HJ = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const GAN_EL = ['목','목','화','화','토','토','금','금','수','수'];
+const EL_CYCLE = ['목','화','토','금','수'];
+function elementGenerates(a, b) { return EL_CYCLE[(EL_CYCLE.indexOf(a) + 1) % 5] === b; }
+// 지지충(沖): 자오·축미·인신·묘유·진술·사해
+const ZHI_CHUNG = {0:6,6:0,1:7,7:1,2:8,8:2,3:9,9:3,4:10,10:4,5:11,11:5};
 const CUTOFFS = [
   {m:1, d:6, zhi:1}, {m:2, d:4, zhi:2}, {m:3, d:6, zhi:3}, {m:4, d:5, zhi:4},
   {m:5, d:6, zhi:5}, {m:6, d:6, zhi:6}, {m:7, d:7, zhi:7}, {m:8, d:8, zhi:8},
@@ -213,6 +239,24 @@ function mod(n,m){ return ((n%m)+m)%m; }
 function toJDN(y,m,d){const a=Math.floor((14-m)/12);const y2=y+4800-a;const m2=m+12*a-3;return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;}
 function getYearForPillar(y,m,d){ if (m<2||(m===2&&d<4)) return y-1; return y; }
 function getMonthZhi(m,d){ if (m===1&&d<6) return 0; let best=CUTOFFS[0]; for(const c of CUTOFFS){ if(c.m<m||(c.m===m&&c.d<=d)) best=c; } return best.zhi; }
+
+/* ══ 음력 → 양력 변환 (브라우저 내장 공식 음력 데이터) ══ */
+function dangiParts(date) {
+  const fmt = new Intl.DateTimeFormat('en-US-u-ca-dangi', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  const parts = fmt.formatToParts(date);
+  const get = (type) => parts.find(p => p.type === type)?.value;
+  return { year: get('relatedYear'), month: get('month'), day: get('day') };
+}
+function lunarToSolar(year, month, day, isLeap) {
+  const target = String(month) + (isLeap ? 'bis' : '');
+  const start = new Date(year - 1, 10, 1);
+  const end = new Date(year + 1, 2, 1);
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const p = dangiParts(d);
+    if (p.year === String(year) && p.month === target && p.day === String(day)) return new Date(d);
+  }
+  return null;
+}
 
 const BIRTH_TIME_TO_ZHI = {
   '자시(23:00~00:59)':0, '축시(01:00~02:59)':1, '인시(03:00~04:59)':2, '묘시(05:00~06:59)':3,
@@ -247,13 +291,28 @@ function pillarsToText(p) {
 }
 
 /* ══ 인물 입력 블록 ══ */
-function personInputHtml(prefix) {
+function personInputHtml(prefix, showGender) {
+  const genderHtml = showGender ? `
+    <div class="f">
+      <label>성별</label>
+      <div style="display:flex;gap:1rem;padding:0.5rem 0;">
+        <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.82rem;cursor:pointer;"><input type="radio" name="${prefix}_gender" value="male" checked> 남성</label>
+        <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.82rem;cursor:pointer;"><input type="radio" name="${prefix}_gender" value="female"> 여성</label>
+      </div>
+    </div>` : `<div class="f"></div>`;
   return `
     <div class="field-row2">
       <div class="f"><label>이름</label><input id="${prefix}_name"></div>
-      <div class="f"><label>생년월일 (양력)</label><input type="date" id="${prefix}_date"></div>
+      <div class="f"><label>생년월일</label><input type="date" id="${prefix}_date"></div>
     </div>
     <div class="field-row2">
+      <div class="f">
+        <label>달력</label>
+        <div style="display:flex;gap:1rem;padding:0.5rem 0;">
+          <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.82rem;cursor:pointer;"><input type="radio" name="${prefix}_cal" value="solar" checked> 양력</label>
+          <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.82rem;cursor:pointer;"><input type="radio" name="${prefix}_cal" value="lunar"> 음력</label>
+        </div>
+      </div>
       <div class="f">
         <label>태어난 시간</label>
         <select id="${prefix}_time">
@@ -272,18 +331,35 @@ function personInputHtml(prefix) {
           <option value="해시(21:00~22:59)">해시 (21:00~22:59)</option>
         </select>
       </div>
+    </div>
+    <div class="field-row2">
+      ${genderHtml}
       <div class="f"></div>
     </div>`;
 }
 
 function readPerson(prefix) {
   const name = document.getElementById(prefix + '_name').value || '(이름 미입력)';
-  const date = document.getElementById(prefix + '_date').value;
+  let dateVal = document.getElementById(prefix + '_date').value;
   const timeVal = document.getElementById(prefix + '_time').value;
   const hourZhiIdx = BIRTH_TIME_TO_ZHI.hasOwnProperty(timeVal) ? BIRTH_TIME_TO_ZHI[timeVal] : null;
-  if (!date) return { name, date: '(생년월일 미입력)', saju: '-' };
-  const p = calcPillars(date, hourZhiIdx);
-  return { name, date, saju: pillarsToText(p) };
+  const genderEl = document.querySelector(`input[name="${prefix}_gender"]:checked`);
+  const gender = genderEl ? genderEl.value : null;
+  if (!dateVal) return { name, date: '(생년월일 미입력)', saju: '-', gender };
+
+  const calEl = document.querySelector(`input[name="${prefix}_cal"]:checked`);
+  const isLunar = calEl && calEl.value === 'lunar';
+  let displayDate = dateVal;
+  if (isLunar) {
+    const [ly, lm, ld] = dateVal.split('-').map(Number);
+    const solar = lunarToSolar(ly, lm, ld, false);
+    if (!solar) return { name, date: '(음력 변환 실패)', saju: '-', gender };
+    const y = solar.getFullYear(), m = solar.getMonth() + 1, d = solar.getDate();
+    dateVal = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    displayDate = `${dateVal} (음력 ${ly}-${lm}-${ld} 변환)`;
+  }
+  const p = calcPillars(dateVal, hourZhiIdx);
+  return { name, date: displayDate, solarDate: dateVal, saju: pillarsToText(p), gender, pillars: p };
 }
 
 function candidateRowHtml(prefix, i) {
@@ -305,12 +381,118 @@ function readCandidates(prefix, count) {
   return rows;
 }
 
+/* ══ AI 초안: 작명 수리·원형이정·소견 ══ */
+function suriElement(n) {
+  const last = n % 10;
+  if (last === 1 || last === 2) return '목';
+  if (last === 3 || last === 4) return '화';
+  if (last === 5 || last === 6) return '토';
+  if (last === 7 || last === 8) return '금';
+  return '수';
+}
+function draftNaming() {
+  const s = parseInt(document.getElementById('naming_stroke_s').value, 10);
+  const g1 = parseInt(document.getElementById('naming_stroke_g1').value, 10);
+  const g2raw = document.getElementById('naming_stroke_g2').value;
+  const g2 = g2raw ? parseInt(g2raw, 10) : null;
+  if (!s || !g1) { alert('성 획수와 이름 첫자 획수를 입력해주세요.'); return; }
+
+  const won = g2 ? g1 + g2 : g1;
+  const hyeong = s + g1;
+  const i = g2 ? s + g2 : s + g1;
+  const jeong = g2 ? s + g1 + g2 : s + g1;
+  const wonEl = suriElement(won), hyeongEl = suriElement(hyeong), iEl = suriElement(i), jeongEl = suriElement(jeong);
+
+  document.getElementById('naming_suri').value =
+    `원격 ${won}(${wonEl}) · 형격 ${hyeong}(${hyeongEl}) · 이격 ${i}(${iEl}) · 정격 ${jeong}(${jeongEl})`;
+
+  document.getElementById('naming_wonhyeong').value =
+`원격(元格) ${won} · ${wonEl} — 초년운을 나타내며, 유년기~청소년기의 기초 기운을 봅니다.
+형격(亨格) ${hyeong} · ${hyeongEl} — 청년기의 대인관계·사회활동운을 나타냅니다.
+이격(利格) ${i} · ${iEl} — 중년기의 성취·재물운을 나타냅니다.
+정격(貞格) ${jeong} · ${jeongEl} — 인생 전체를 아우르는 총운을 나타냅니다.
+(자세한 길흉 판단은 원장님 확인 후 기재해주세요.)`;
+
+  // 사주 오행과 연결한 소견 초안 (내담자 생년월일이 입력된 경우)
+  const p = readPerson('naming');
+  let gyeon = `이름의 정격 오행은 ${jeongEl} 기운입니다.`;
+  if (p.pillars) {
+    const ZHI_EL = ['수','토','목','목','토','화','화','토','금','금','토','수'];
+    const count = { 목:0, 화:0, 토:0, 금:0, 수:0 };
+    [ [p.pillars.yearGanIdx,p.pillars.yearZhiIdx], [p.pillars.monthGanIdx,p.pillars.monthZhiIdx], [p.pillars.dayGanIdx,p.pillars.dayZhiIdx] ]
+      .forEach(([g,z]) => { count[GAN_EL[g]]++; count[ZHI_EL[z]]++; });
+    if (p.pillars.hourGanIdx !== null) { count[GAN_EL[p.pillars.hourGanIdx]]++; count[ZHI_EL[p.pillars.hourZhiIdx]]++; }
+    const weakest = Object.entries(count).filter(([,c]) => c === 0).map(([el]) => el);
+    if (weakest.length) {
+      gyeon += ` 사주 원국에는 ${weakest.join(', ')} 기운이 보이지 않는데, `;
+      gyeon += weakest.includes(jeongEl) ? `이름의 정격(${jeongEl})이 이를 보완해주는 구성입니다.` : `이름의 정격은 ${jeongEl}으로 이 부분과는 직접 연결되지 않아 참고가 필요합니다.`;
+    } else {
+      gyeon += ` 사주 원국의 오행은 비교적 고르게 분포되어 있습니다.`;
+    }
+  }
+  gyeon += ' (AI 초안입니다 — 원장님의 전문적 판단으로 자유롭게 수정해주세요.)';
+  document.getElementById('naming_gyeon').value = gyeon;
+}
+
+/* ══ AI 초안: 혼인택일 / 출산예정 후보 ══ */
+function dayPillarOf(date) {
+  const y = date.getFullYear(), m = date.getMonth() + 1, d = date.getDate();
+  const jdn = toJDN(y, m, d);
+  return { dayGanIdx: mod(jdn + 9, 10), dayZhiIdx: mod(jdn + 1, 12) };
+}
+function draftCandidates(type) {
+  const isMarriage = type === 'marriage';
+  const p1 = readPerson(isMarriage ? 'groom' : 'dad');
+  const p2 = readPerson(isMarriage ? 'bride' : 'mom');
+  if (!p1.pillars || !p2.pillars) { alert('두 분의 생년월일을 먼저 입력해주세요.'); return; }
+
+  const startVal = document.getElementById(isMarriage ? 'mcand_start' : 'bcand_start').value;
+  const endVal = document.getElementById(isMarriage ? 'mcand_end' : 'bcand_end').value;
+  if (!startVal || !endVal) { alert('탐색 시작일과 종료일을 입력해주세요.'); return; }
+  const start = new Date(startVal), end = new Date(endVal);
+  if (end < start) { alert('종료일이 시작일보다 빠릅니다.'); return; }
+
+  const results = [];
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const dp = dayPillarOf(d);
+    let score = 0;
+    const notes = [];
+    [p1, p2].forEach((p, idx) => {
+      if (ZHI_CHUNG[dp.dayZhiIdx] === p.pillars.dayZhiIdx) { score -= 3; notes.push((idx===0?(isMarriage?'신랑':'아빠'):(isMarriage?'신부':'엄마')) + ' 일지와 충'); }
+    });
+    const dayEl = GAN_EL[dp.dayGanIdx];
+    [p1, p2].forEach((p) => { if (elementGenerates(dayEl, GAN_EL[p.pillars.dayGanIdx])) score += 1; });
+    if (isMarriage) {
+      const lp = dangiParts(new Date(d));
+      const lunarDay = parseInt(lp.day, 10);
+      if (lunarDay % 10 === 9 || lunarDay % 10 === 0) { score += 2; notes.push('손없는날'); }
+    }
+    results.push({ date: new Date(d), score, notes, ganzhi: GAN_KR[dp.dayGanIdx] + ZHI_KR[dp.dayZhiIdx] });
+  }
+
+  results.sort((a, b) => b.score - a.score);
+  const count = isMarriage ? 5 : 3;
+  const top = results.slice(0, count);
+  const grades = isMarriage
+    ? ['1순위(최상)', '2순위(상)', '3순위(중상)', '4순위(중)', '5순위(하)']
+    : ['1순위(최상)', '2순위(상)', '3순위(중)'];
+
+  const prefix = isMarriage ? 'mcand' : 'bcand';
+  top.forEach((r, i) => {
+    const y = r.date.getFullYear(), m = r.date.getMonth() + 1, dd = r.date.getDate();
+    document.getElementById(`${prefix}_grade_${i}`).value = grades[i];
+    document.getElementById(`${prefix}_date_${i}`).value = `${y}-${String(m).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
+    document.getElementById(`${prefix}_note_${i}`).value = `일진 ${r.ganzhi}${r.notes.length ? ' · ' + r.notes.join(', ') : ' · 충 없음'} (AI 초안)`;
+  });
+  alert('AI 초안이 채워졌습니다. 최종 날짜는 직접 확인 후 저장해주세요.');
+}
+
 function init() {
-  document.getElementById('naming-person').innerHTML = personInputHtml('naming');
-  document.getElementById('marriage-groom').innerHTML = personInputHtml('groom');
-  document.getElementById('marriage-bride').innerHTML = personInputHtml('bride');
-  document.getElementById('birth-dad').innerHTML = personInputHtml('dad');
-  document.getElementById('birth-mom').innerHTML = personInputHtml('mom');
+  document.getElementById('naming-person').innerHTML = personInputHtml('naming', true);
+  document.getElementById('marriage-groom').innerHTML = personInputHtml('groom', false);
+  document.getElementById('marriage-bride').innerHTML = personInputHtml('bride', false);
+  document.getElementById('birth-dad').innerHTML = personInputHtml('dad', false);
+  document.getElementById('birth-mom').innerHTML = personInputHtml('mom', false);
 
   let mc = '';
   for (let i = 0; i < 5; i++) mc += candidateRowHtml('mcand', i);
@@ -319,6 +501,13 @@ function init() {
   let bc = '';
   for (let i = 0; i < 3; i++) bc += candidateRowHtml('bcand', i);
   document.getElementById('birth-candidates').innerHTML = bc;
+
+  const fmt = (d) => d.toISOString().slice(0, 10);
+  const today = new Date();
+  document.getElementById('mcand_start').value = fmt(today);
+  document.getElementById('mcand_end').value = fmt(new Date(today.getTime() + 120 * 86400000));
+  document.getElementById('bcand_start').value = fmt(today);
+  document.getElementById('bcand_end').value = fmt(new Date(today.getTime() + 60 * 86400000));
 
   setType('naming');
 
