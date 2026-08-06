@@ -1,0 +1,10 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // 사이트에 쓰이는 사진: 누구나 볼 수 있지만, 업로드/삭제는 관리자 본인만 가능
+    match /photos/{fileName} {
+      allow read: if true;
+      allow write: if request.auth != null && request.auth.token.email == 'a01020581925@gmail.com';
+    }
+  }
+}

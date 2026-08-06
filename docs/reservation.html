@@ -461,9 +461,10 @@
           입금이 확인되면 예약 확정 전화를 드립니다.
         </p>
         <a id="kakaopayBtn" href="https://open.kakao.com/o/sWJt3TGi" target="_blank" rel="noopener" class="submit-btn" style="display:block;text-align:center;text-decoration:none;">카카오페이로 예약금 보내기</a>
-        <p style="font-size:0.78rem;color:var(--ink-muted);text-align:center;margin-top:0.9rem;">
-          계좌이체도 가능합니다 — 카카오뱅크 3333-26-7186736 (예금주 김ㅇㅈ)
-        </p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-top:0.9rem;flex-wrap:wrap;">
+          <p style="font-size:0.78rem;color:var(--ink-muted);">계좌이체: 카카오뱅크 3333-26-7186736 (예금주 김ㅇㅈ)</p>
+          <button type="button" id="copyAccountBtn" onclick="copyAccountNumber()" style="font-size:0.72rem;color:var(--gold);border:0.5px solid var(--gold);background:none;padding:0.25rem 0.7rem;cursor:pointer;font-family:var(--sans);white-space:nowrap;">계좌번호 복사</button>
+        </div>
       </div>
       <p class="success-desc" style="margin-top:1.5rem;">
         기다리는 동안 블로그나 유튜브에서<br>
@@ -491,6 +492,27 @@
   const kakaopayBtn = document.getElementById('kakaopayBtn');
   if (KAKAOPAY_LINK !== 'YOUR_KAKAOPAY_LINK') {
     kakaopayBtn.href = KAKAOPAY_LINK;
+  }
+
+  const BANK_ACCOUNT_NUMBER = '3333-26-7186736';
+  function copyAccountNumber() {
+    const btn = document.getElementById('copyAccountBtn');
+    const done = () => { btn.textContent = '복사됨!'; setTimeout(() => { btn.textContent = '계좌번호 복사'; }, 1800); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(BANK_ACCOUNT_NUMBER).then(done).catch(() => fallbackCopy(done));
+    } else {
+      fallbackCopy(done);
+    }
+  }
+  function fallbackCopy(done) {
+    const temp = document.createElement('textarea');
+    temp.value = BANK_ACCOUNT_NUMBER;
+    temp.style.position = 'fixed';
+    temp.style.opacity = '0';
+    document.body.appendChild(temp);
+    temp.select();
+    try { document.execCommand('copy'); done(); } catch (e) { alert('복사에 실패했습니다. 직접 입력해주세요: ' + BANK_ACCOUNT_NUMBER); }
+    document.body.removeChild(temp);
   }
 
   function selectProgram(el, name) {
