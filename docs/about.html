@@ -8,6 +8,9 @@
 <link rel="icon" type="image/png" href="assets/images/favicon-32.png">
 <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="assets/js/firebase-config.js"></script>
 <meta name="theme-color" content="#1E1C18">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -495,6 +498,23 @@ function buildGallery(){
   }
 }
 buildGallery();
+
+/* ══ 관리자 페이지에서 업로드한 사진이 있으면 우선 사용 (Firebase Storage) ══ */
+if (FIREBASE_READY) {
+  const storage = firebase.storage();
+  ['profile','gut','jakdu','chundo'].forEach((key) => {
+    storage.ref('photos/' + key + '.jpg').getDownloadURL().then((url) => {
+      const img = document.getElementById(key === 'profile' ? 'hero-photo' : 'ss-' + key + '-img');
+      if (img) img.src = url;
+    }).catch(() => { /* 업로드된 사진 없음 - 기존 파일/애니메이션 유지 */ });
+  });
+  for (let i = 1; i <= 8; i++) {
+    storage.ref('photos/gallery-' + i + '.jpg').getDownloadURL().then((url) => {
+      const slot = document.querySelectorAll('#gGrid .gs')[i - 1];
+      if (slot) slot.querySelector('img').src = url;
+    }).catch(() => {});
+  }
+}
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));

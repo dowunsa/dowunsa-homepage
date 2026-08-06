@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사진 관리 — 도운사</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/images/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
+<script src="assets/js/firebase-config.js"></script>
+<style>
+  :root {
+    --cream: #F7F4EF; --ink: #1E1C18; --ink-light: #4A4740; --ink-muted: #8A877F;
+    --gold: #B8975A; --gold-light: #F0E8D8; --sage: #6B7B6A; --sage-light: #E8EDE6;
+    --border: rgba(30,28,24,0.12);
+    --serif: 'Noto Serif KR', serif; --sans: 'Noto Sans KR', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--cream); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.7; }
+  header { padding: 1.2rem 1.5rem; border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-family: var(--serif); font-size: 1.05rem; color: var(--ink); }
+  .back-link { font-size: 0.8rem; color: var(--ink-muted); text-decoration: none; }
+  .page { max-width: 900px; margin: 0 auto; padding: 2rem 1.2rem 5rem; }
+  .page-title { font-family: var(--serif); font-size: 1.3rem; font-weight: 300; margin-bottom: 0.4rem; }
+  .page-sub { font-size: 0.82rem; color: var(--ink-muted); margin-bottom: 2rem; line-height: 1.8; }
+
+  .section-title { font-size: 0.85rem; color: var(--ink-light); font-weight: 600; margin: 2rem 0 1rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; }
+  .slot { background: white; border: 0.5px solid var(--border); }
+  .slot-preview { aspect-ratio: 1; background: var(--sage-light); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .slot-preview img { width: 100%; height: 100%; object-fit: cover; display: none; }
+  .slot-preview .ph { font-size: 0.72rem; color: var(--sage); text-align: center; padding: 0.5rem; }
+  .slot-label { font-size: 0.78rem; padding: 0.6rem 0.7rem 0.3rem; color: var(--ink-light); }
+  .slot-actions { padding: 0 0.7rem 0.7rem; display: flex; gap: 0.4rem; align-items: center; }
+  .slot input[type=file] { display: none; }
+  .slot-btn { font-size: 0.7rem; border: 0.5px solid var(--border); background: none; padding: 0.35rem 0.7rem; cursor: pointer; color: var(--ink-light); font-family: var(--sans); }
+  .slot-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .slot-status { font-size: 0.68rem; color: var(--sage); }
+
+  .setup-warn { max-width: 500px; margin: 4rem auto; text-align: center; font-size: 0.85rem; color: var(--ink-muted); line-height: 2; padding: 0 1.5rem; }
+</style>
+</head>
+<body>
+<header>
+  <a href="admin-dashboard.html" class="logo">道運寺 도운사 · 관리자</a>
+  <a href="admin-dashboard.html" class="back-link">← 예약 목록으로</a>
+</header>
+
+<div class="page" id="page" style="display:none;">
+  <p class="page-title">사진 관리</p>
+  <p class="page-sub">각 칸을 클릭해 사진을 올리면 몇 초 안에 홈페이지(about.html)에 바로 반영됩니다. 새 사진을 올리면 이전 사진을 덮어씁니다.</p>
+
+  <p class="section-title">대표 프로필 &amp; 의식 사진</p>
+  <div class="grid" id="mainGrid"></div>
+
+  <p class="section-title">현장 갤러리 (최대 8장)</p>
+  <div class="grid" id="galleryGrid"></div>
+</div>
+
+<div class="setup-warn" id="setupWarn" style="display:none;"></div>
+
+<script>
+const ADMIN_EMAIL = 'a01020581925@gmail.com';
+const MAIN_SLOTS = [
+  { key: 'profile', label: '대표 프로필' },
+  { key: 'gut', label: '굿 (巫儀)' },
+  { key: 'jakdu', label: '12 작두 타기' },
+  { key: 'chundo', label: '천도재' },
+];
+const GALLERY_COUNT = 8;
+
+if (!FIREBASE_READY) {
+  document.getElementById('setupWarn').style.display = 'block';
+  document.getElementById('setupWarn').innerHTML = 'Firebase가 아직 설정되지 않았습니다.<br>assets/js/firebase-config.js 값을 채워주세요.';
+} else {
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user || user.email !== ADMIN_EMAIL) { window.location.href = 'admin-login.html'; return; }
+    document.getElementById('page').style.display = 'block';
+    buildSlots();
+  });
+}
+
+function buildSlots() {
+  const mainGrid = document.getElementById('mainGrid');
+  mainGrid.innerHTML = MAIN_SLOTS.map(s => slotHtml(s.key, s.label)).join('');
+
+  const galleryGrid = document.getElementById('galleryGrid');
+  let html = '';
+  for (let i = 1; i <= GALLERY_COUNT; i++) html += slotHtml('gallery-' + i, '갤러리 ' + i);
+  galleryGrid.innerHTML = html;
+
+  MAIN_SLOTS.map(s => s.key).concat(Array.from({length: GALLERY_COUNT}, (_, i) => 'gallery-' + (i+1)))
+    .forEach(loadPreview);
+}
+
+function slotHtml(key, label) {
+  return `<div class="slot" id="slot-${key}">
+    <div class="slot-preview">
+      <img id="img-${key}">
+      <div class="ph" id="ph-${key}">사진 없음</div>
+    </div>
+    <div class="slot-label">${label}</div>
+    <div class="slot-actions">
+      <label class="slot-btn">
+        업로드
+        <input type="file" accept="image/*" onchange="uploadPhoto('${key}', this)">
+      </label>
+      <span class="slot-status" id="status-${key}"></span>
+    </div>
+  </div>`;
+}
+
+function loadPreview(key) {
+  const ref = firebase.storage().ref('photos/' + key + '.jpg');
+  ref.getDownloadURL().then((url) => {
+    const img = document.getElementById('img-' + key);
+    img.src = url;
+    img.style.display = 'block';
+    document.getElementById('ph-' + key).style.display = 'none';
+  }).catch(() => { /* 아직 업로드된 사진 없음 */ });
+}
+
+function uploadPhoto(key, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('status-' + key);
+  statusEl.textContent = '업로드 중...';
+  const ref = firebase.storage().ref('photos/' + key + '.jpg');
+  ref.put(file).then(() => ref.getDownloadURL()).then((url) => {
+    const img = document.getElementById('img-' + key);
+    img.src = url;
+    img.style.display = 'block';
+    document.getElementById('ph-' + key).style.display = 'none';
+    statusEl.textContent = '완료!';
+    setTimeout(() => { statusEl.textContent = ''; }, 2000);
+  }).catch((err) => {
+    console.error(err);
+    statusEl.textContent = '업로드 실패';
+  });
+}
+</script>
+</body>
+</html>
