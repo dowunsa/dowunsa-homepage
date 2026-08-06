@@ -210,10 +210,21 @@
       <label>상담 프로그램</label>
       <select id="ad_program">
         <option>기본 상담 (60분)</option>
-        <option>심화 상담</option>
+        <optgroup label="심화 상담">
+          <option>혼인택일</option>
+          <option>출산예정</option>
+          <option>작명</option>
+        </optgroup>
         <option>VIP 프라이빗 상담</option>
-        <option>그룹 프로그램</option>
         <option>풍수 인테리어 (양택)</option>
+        <optgroup label="무속 상담">
+          <option>조상해원천도</option>
+          <option>신굿</option>
+          <option>칠성굿</option>
+          <option>12계단작두굿</option>
+          <option>기타운맞이</option>
+          <option>사업재수굿</option>
+        </optgroup>
       </select>
     </div>
     <div class="modal-row">
@@ -323,22 +334,21 @@ const BIRTH_TIME_TO_ZHI = {
 };
 
 /* ══ 상담 카테고리 ══ */
-const PROGRAMS = ['기본 상담 (60분)', '심화 상담', 'VIP 프라이빗 상담', '그룹 프로그램', '풍수 인테리어 (양택)'];
-function shortProgram(p) {
-  if (!p) return '상담';
-  if (p.startsWith('기본')) return '기본';
-  if (p.startsWith('심화')) return '심화';
-  if (p.startsWith('VIP')) return 'VIP';
-  if (p.startsWith('그룹')) return '그룹';
-  if (p.startsWith('풍수')) return '풍수';
-  return p;
-}
+const CATEGORY_GROUPS = [
+  { label: '기본 상담', programs: ['기본 상담 (60분)'] },
+  { label: '심화 상담', programs: ['혼인택일', '출산예정', '작명'] },
+  { label: 'VIP', programs: ['VIP 프라이빗 상담'] },
+  { label: '풍수 인테리어', programs: ['풍수 인테리어 (양택)'] },
+  { label: '무속 상담', programs: ['조상해원천도', '신굿', '칠성굿', '12계단작두굿', '기타운맞이', '사업재수굿'] },
+];
+const PROGRAMS = CATEGORY_GROUPS.flatMap(g => g.programs);
+const DOC_TYPES = { '혼인택일': 'marriage', '출산예정': 'birth', '작명': 'naming' };
 
 /* ══ 상태 ══ */
 const state = {
   reservations: [],
   appointments: [],
-  filterProgram: null,
+  filterGroup: null,
   view: 'list',
   calDate: new Date(),
 };
@@ -395,21 +405,18 @@ function setView(v) {
 
 /* ══ 사이드바 ══ */
 function renderSidebar() {
-  const counts = {};
-  PROGRAMS.forEach(p => counts[p] = 0);
-  state.reservations.forEach(r => { if (counts.hasOwnProperty(r.program)) counts[r.program]++; });
   const total = state.reservations.length;
-
   const el = document.getElementById('catList');
-  let html = `<button class="cat-item ${state.filterProgram===null?'active':''}" onclick="setFilter(null)"><span>전체</span><span class="cat-count">${total}</span></button>`;
-  PROGRAMS.forEach(p => {
-    html += `<button class="cat-item ${state.filterProgram===p?'active':''}" onclick="setFilter('${p.replace(/'/g,"\\'")}')"><span>${shortProgram(p)}</span><span class="cat-count">${counts[p]}</span></button>`;
+  let html = `<button class="cat-item ${state.filterGroup===null?'active':''}" onclick="setFilter(null)"><span>전체</span><span class="cat-count">${total}</span></button>`;
+  CATEGORY_GROUPS.forEach((g, i) => {
+    const count = state.reservations.filter(r => g.programs.includes(r.program)).length;
+    html += `<button class="cat-item ${state.filterGroup===i?'active':''}" onclick="setFilter(${i})"><span>${g.label}</span><span class="cat-count">${count}</span></button>`;
   });
   el.innerHTML = html;
 }
 
-function setFilter(program) {
-  state.filterProgram = program;
+function setFilter(groupIdx) {
+  state.filterGroup = groupIdx;
   renderSidebar();
   renderList();
 }
@@ -417,7 +424,9 @@ function setFilter(program) {
 /* ══ 목록 뷰 ══ */
 function renderList() {
   const list = document.getElementById('list');
-  const filtered = state.filterProgram ? state.reservations.filter(r => r.program === state.filterProgram) : state.reservations;
+  const filtered = state.filterGroup !== null
+    ? state.reservations.filter(r => CATEGORY_GROUPS[state.filterGroup].programs.includes(r.program))
+    : state.reservations;
   if (filtered.length === 0) {
     list.innerHTML = '<div class="empty-state">해당 카테고리에 예약이 없습니다.</div>';
     return;

@@ -94,6 +94,24 @@
     font-size: 0.75rem;
     color: var(--gold);
   }
+  .program-group {
+    border: 0.5px solid var(--border);
+    padding: 1.2rem 1.3rem;
+    background: white;
+  }
+  .subtab-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .subtab-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.65rem 0.85rem;
+    border: 0.5px solid var(--border);
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+  }
+  .subtab-item:hover { border-color: var(--gold); }
+  .subtab-item.selected { border-color: var(--gold); background: var(--gold-light); }
+  .subtab-name { color: var(--ink); }
+  .subtab-price { font-size: 0.78rem; color: var(--gold); }
   .prog-name {
     font-family: var(--serif);
     font-size: 0.95rem;
@@ -274,25 +292,57 @@
         <p class="prog-price">200,000원 · 60분</p>
         <p class="prog-desc">처음 오시는 분께 권합니다. 정서 및 인생 방향 상담.</p>
       </div>
-      <div class="program-item" onclick="selectProgram(this, '심화 상담')" data-program="심화 상담">
+
+      <div class="program-group">
         <p class="prog-name">심화 상담</p>
-        <p class="prog-price">별도 안내</p>
-        <p class="prog-desc">기본 상담 이후 더 깊은 과정이 필요하신 분.</p>
+        <p class="prog-desc" style="margin-bottom:0.7rem;">기본 상담 이후 더 깊은 전문 상담이 필요하신 분.</p>
+        <div class="subtab-list">
+          <div class="subtab-item" onclick="selectProgram(this, '혼인택일')" data-program="혼인택일">
+            <span class="subtab-name">혼인택일</span><span class="subtab-price">300,000원</span>
+          </div>
+          <div class="subtab-item" onclick="selectProgram(this, '출산예정')" data-program="출산예정">
+            <span class="subtab-name">출산예정</span><span class="subtab-price">상담 후 결정</span>
+          </div>
+          <div class="subtab-item" onclick="selectProgram(this, '작명')" data-program="작명">
+            <span class="subtab-name">작명</span><span class="subtab-price">300,000원</span>
+          </div>
+        </div>
       </div>
+
       <div class="program-item" onclick="selectProgram(this, 'VIP 프라이빗 상담')" data-program="VIP 프라이빗 상담">
         <p class="prog-name">VIP 프라이빗 상담</p>
         <p class="prog-price">800,000 – 1,500,000원</p>
         <p class="prog-desc">비공개 예약. 전문직·사업가·정치 관계자 대상.</p>
       </div>
-      <div class="program-item" onclick="selectProgram(this, '그룹 프로그램')" data-program="그룹 프로그램">
-        <p class="prog-name">그룹 프로그램</p>
-        <p class="prog-price">250,000 – 500,000원 (1인)</p>
-        <p class="prog-desc">중년 여성 회복 클래스 · 감정 회복 소규모 정기과정.</p>
-      </div>
       <div class="program-item" onclick="selectProgram(this, '풍수 인테리어 (양택)')" data-program="풍수 인테리어 (양택)">
         <p class="prog-name">풍수 인테리어 (양택)</p>
         <p class="prog-price">300,000원 기본 + 70,000원/평</p>
         <p class="prog-desc">공간의 흐름을 읽고 재정비합니다. 30평 기준 기본료.</p>
+      </div>
+
+      <div class="program-group">
+        <p class="prog-name">무속 상담</p>
+        <p class="prog-desc" style="margin-bottom:0.7rem;">조상해원천도·신굿·칠성굿·12계단작두굿·기타운맞이·사업재수굿 등은 상담 후 진행합니다. 금액도 상담 후 결정됩니다.</p>
+        <div class="subtab-list">
+          <div class="subtab-item" onclick="selectProgram(this, '조상해원천도')" data-program="조상해원천도">
+            <span class="subtab-name">조상해원천도</span><span class="subtab-price">상담 후 결정</span>
+          </div>
+          <div class="subtab-item" onclick="selectProgram(this, '신굿')" data-program="신굿">
+            <span class="subtab-name">신굿</span><span class="subtab-price">상담 후 결정</span>
+          </div>
+          <div class="subtab-item" onclick="selectProgram(this, '칠성굿')" data-program="칠성굿">
+            <span class="subtab-name">칠성굿</span><span class="subtab-price">상담 후 결정</span>
+          </div>
+          <div class="subtab-item" onclick="selectProgram(this, '12계단작두굿')" data-program="12계단작두굿">
+            <span class="subtab-name">12계단작두굿</span><span class="subtab-price">상담 후 결정</span>
+          </div>
+          <div class="subtab-item" onclick="selectProgram(this, '기타운맞이')" data-program="기타운맞이">
+            <span class="subtab-name">기타운맞이</span><span class="subtab-price">상담 후 결정</span>
+          </div>
+          <div class="subtab-item" onclick="selectProgram(this, '사업재수굿')" data-program="사업재수굿">
+            <span class="subtab-name">사업재수굿</span><span class="subtab-price">상담 후 결정</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -530,7 +580,7 @@
   }
 
   function selectProgram(el, name) {
-    document.querySelectorAll('.program-item').forEach(i => i.classList.remove('selected'));
+    document.querySelectorAll('.program-item, .subtab-item').forEach(i => i.classList.remove('selected'));
     el.classList.add('selected');
     document.getElementById('selectedProgram').value = name;
   }
