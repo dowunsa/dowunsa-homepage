@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>상담서 작성 — 도운사</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/images/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="assets/js/firebase-config.js"></script>
+<style>
+  :root {
+    --cream: #F7F4EF; --ink: #1E1C18; --ink-light: #4A4740; --ink-muted: #8A877F;
+    --gold: #B8975A; --gold-light: #F0E8D8; --sage: #6B7B6A; --sage-light: #E8EDE6;
+    --border: rgba(30,28,24,0.12);
+    --serif: 'Noto Serif KR', serif; --sans: 'Noto Sans KR', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--cream); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.7; }
+  header { padding: 1.2rem 1.5rem; border-bottom: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .logo { font-family: var(--serif); font-size: 1.05rem; color: var(--ink); }
+  .back-link { font-size: 0.8rem; color: var(--ink-muted); text-decoration: none; }
+  .page { max-width: 760px; margin: 0 auto; padding: 2rem 1.2rem 6rem; }
+  .page-title { font-family: var(--serif); font-size: 1.3rem; font-weight: 300; margin-bottom: 1.5rem; }
+
+  .type-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .type-tab { font-size: 0.85rem; padding: 0.6rem 1.2rem; border: 0.5px solid var(--border); background: white; cursor: pointer; color: var(--ink-light); font-family: var(--sans); }
+  .type-tab.active { background: var(--ink); color: var(--cream); border-color: var(--ink); }
+
+  .form-section { display: none; }
+  .form-section.active { display: block; }
+  .field-block { background: white; border: 0.5px solid var(--border); padding: 1.3rem 1.4rem; margin-bottom: 1.2rem; }
+  .field-block h3 { font-family: var(--serif); font-size: 1rem; font-weight: 400; margin-bottom: 1rem; color: var(--gold); }
+  .field-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; margin-bottom: 0.9rem; }
+  .field-row3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 0.9rem; margin-bottom: 0.9rem; }
+  .f label { display: block; font-size: 0.76rem; color: var(--ink-light); margin-bottom: 0.4rem; }
+  .f input, .f select, .f textarea {
+    width: 100%; background: white; border: 0.5px solid var(--border); padding: 0.65rem 0.8rem;
+    font-family: var(--sans); font-size: 0.85rem; color: var(--ink); outline: none; border-radius: 0;
+  }
+  .f textarea { min-height: 90px; resize: vertical; }
+  .calendar-radio { display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.78rem; color: var(--ink-light); }
+  .calendar-radio label { display: flex; align-items: center; gap: 0.35rem; cursor: pointer; }
+
+  .candidate-row { display: grid; grid-template-columns: 1fr 1.3fr 2fr; gap: 0.7rem; margin-bottom: 0.6rem; align-items: end; }
+  .candidate-row .f label { font-size: 0.7rem; }
+
+  .gen-btn { width: 100%; background: var(--ink); color: var(--cream); border: none; padding: 1rem; font-family: var(--sans); font-size: 0.9rem; letter-spacing: 0.05em; cursor: pointer; margin-top: 1rem; }
+  .gen-btn:hover { background: var(--gold); }
+  .hint { font-size: 0.75rem; color: var(--ink-muted); margin-top: 0.6rem; line-height: 1.7; }
+
+  .setup-warn { max-width: 500px; margin: 4rem auto; text-align: center; font-size: 0.85rem; color: var(--ink-muted); line-height: 2; padding: 0 1.5rem; }
+
+  /* ── 인쇄용 (A4) ── */
+  #printArea { display: none; }
+  @media print {
+    @page { size: A4; margin: 0; }
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    #printArea { display: block; position: absolute; top: 0; left: 0; width: 100%; }
+  }
+  .doc-frame {
+    position: relative;
+    width: 210mm;
+    min-height: 297mm;
+    background-image: url('assets/images/pdf-bg.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    padding: 86mm 20mm 20mm;
+    box-sizing: border-box;
+  }
+  .doc-maintitle { font-family: var(--serif); font-size: 1.7rem; font-weight: 700; color: var(--ink); text-align: center; letter-spacing: 0.3em; margin: 0 0 1rem; position: relative; z-index: 1; }
+  .doc-date-row { text-align: right; font-size: 0.78rem; color: var(--ink-light); margin-bottom: 0.6rem; position: relative; z-index: 1; }
+
+  .doc-sec-head { display: flex; align-items: center; gap: 0.6rem; margin: 1.5rem 0 0.9rem; position: relative; z-index: 1; }
+  .doc-num { width: 24px; height: 24px; border-radius: 50%; background: var(--gold); color: white; font-size: 0.72rem; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+  .doc-sec-title2 { font-family: var(--serif); font-size: 1.02rem; font-weight: 700; color: var(--ink); }
+  .doc-sec-hint { font-size: 0.7rem; color: var(--ink-muted); }
+
+  .doc-field-pair { display: flex; gap: 1.8rem; margin-bottom: 0.85rem; position: relative; z-index: 1; }
+  .doc-field { display: flex; align-items: flex-end; gap: 0.6rem; flex: 1; }
+  .doc-field-label { font-size: 0.8rem; color: var(--ink); font-weight: 500; white-space: nowrap; }
+  .doc-field-value { flex: 1; border-bottom: 1px dotted rgba(30,28,24,0.55); padding-bottom: 0.25rem; font-size: 0.83rem; color: var(--ink); min-height: 1.3em; }
+
+  .doc-box { position: relative; background: rgba(184,151,90,0.08); border: 1px solid rgba(184,151,90,0.25); border-radius: 6px; padding: 1rem 1.2rem; min-height: 60px; margin-bottom: 0.3rem; z-index: 1; }
+  .doc-box-icon { position: absolute; bottom: 0.5rem; right: 0.8rem; font-size: 1.3rem; color: rgba(184,151,90,0.35); }
+  .doc-box-text { font-size: 0.84rem; line-height: 1.85; color: var(--ink-light); white-space: pre-wrap; position: relative; z-index: 1; }
+
+  .doc-divider { display: flex; align-items: center; gap: 0.6rem; margin: 1.4rem 0; position: relative; z-index: 1; }
+  .doc-divider::before, .doc-divider::after { content: ''; flex: 1; height: 1px; background: rgba(184,151,90,0.35); }
+  .doc-divider span { color: var(--gold); font-size: 0.75rem; }
+
+  .doc-table { width: 100%; border-collapse: collapse; margin-bottom: 0.4rem; position: relative; z-index: 1; }
+  .doc-table th, .doc-table td { border: 1px solid rgba(184,151,90,0.35); padding: 0.5rem 0.7rem; font-size: 0.8rem; text-align: center; }
+  .doc-table th { background: rgba(184,151,90,0.12); font-weight: 600; color: var(--ink); }
+  .doc-table td { background: rgba(255,255,255,0.4); color: var(--ink-light); }
+
+  .doc-closing { text-align: center; font-size: 0.82rem; color: var(--ink-light); margin: 1.8rem 0 1rem; position: relative; z-index: 1; }
+  .doc-footer-brand { text-align: center; font-size: 0.75rem; color: var(--ink-muted); letter-spacing: 0.15em; position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+<header>
+  <a href="admin-dashboard.html" class="logo">道運寺 도운사 · 관리자</a>
+  <a href="admin-dashboard.html" class="back-link">← 예약 목록으로</a>
+</header>
+
+<div class="page" id="page" style="display:none;">
+  <p class="page-title">상담서 작성 (PDF 저장)</p>
+
+  <div class="type-tabs">
+    <button class="type-tab" id="tab-naming" onclick="setType('naming')">작명서</button>
+    <button class="type-tab" id="tab-marriage" onclick="setType('marriage')">혼인택일 상담서</button>
+    <button class="type-tab" id="tab-birth" onclick="setType('birth')">출산예정일 상담서</button>
+  </div>
+
+  <!-- ══ 작명서 ══ -->
+  <div class="form-section" id="section-naming">
+    <div class="field-block">
+      <h3>내담자 정보</h3>
+      <div id="naming-person"></div>
+    </div>
+    <div class="field-block">
+      <h3>이름 정보</h3>
+      <div class="field-row2">
+        <div class="f"><label>이름 (한글)</label><input id="naming_name_kr"></div>
+        <div class="f"><label>이름 (한자)</label><input id="naming_name_hj"></div>
+      </div>
+      <div class="f" style="margin-bottom:0.9rem;"><label>수리·오행</label><textarea id="naming_suri" placeholder="예: 원격 15(토) · 형격 23(화) · 이격 9(수) · 정격 24(화)"></textarea></div>
+      <div class="f" style="margin-bottom:0.9rem;"><label>원형이정(元亨利貞)</label><textarea id="naming_wonhyeong" placeholder="원격/형격/이격/정격 각 의미 및 길흉 해설"></textarea></div>
+      <div class="f"><label>작명 소견</label><textarea id="naming_gyeon" placeholder="종합 소견"></textarea></div>
+    </div>
+    <button class="gen-btn" onclick="generateDoc('naming')">작명서 PDF로 저장</button>
+  </div>
+
+  <!-- ══ 혼인택일 상담서 ══ -->
+  <div class="form-section" id="section-marriage">
+    <div class="field-block">
+      <h3>상담 정보</h3>
+      <div class="field-row2">
+        <div class="f"><label>예식 지역</label><input id="marriage_region" placeholder="예: 부산"></div>
+        <div class="f"><label>희망 시기</label><input id="marriage_period" placeholder="예: 2026년 가을"></div>
+      </div>
+    </div>
+    <div class="field-block">
+      <h3>신랑 정보</h3>
+      <div id="marriage-groom"></div>
+    </div>
+    <div class="field-block">
+      <h3>신부 정보</h3>
+      <div id="marriage-bride"></div>
+    </div>
+    <div class="field-block">
+      <h3>결혼택일 후보 (5가지, 등급별)</h3>
+      <div id="marriage-candidates"></div>
+    </div>
+    <button class="gen-btn" onclick="generateDoc('marriage')">혼인택일 상담서 PDF로 저장</button>
+  </div>
+
+  <!-- ══ 출산예정일 상담서 ══ -->
+  <div class="form-section" id="section-birth">
+    <div class="field-block">
+      <h3>아빠 정보</h3>
+      <div id="birth-dad"></div>
+    </div>
+    <div class="field-block">
+      <h3>엄마 정보</h3>
+      <div id="birth-mom"></div>
+    </div>
+    <div class="field-block">
+      <h3>제왕절개일자 후보 (3가지, 등급별)</h3>
+      <div id="birth-candidates"></div>
+    </div>
+    <button class="gen-btn" onclick="generateDoc('birth')">출산예정일 상담서 PDF로 저장</button>
+  </div>
+
+  <p class="hint">PDF 저장 버튼을 누르면 인쇄 화면이 뜹니다 — 프린터 선택 화면에서 "PDF로 저장"을 선택하시면 파일로 저장됩니다. (음력 생년월일은 <a href="admin-saju.html" target="_blank" style="color:var(--gold);">사주 계산기</a>에서 먼저 양력으로 변환한 뒤 입력해주세요.)</p>
+</div>
+
+<div class="setup-warn" id="setupWarn" style="display:none;"></div>
+
+<div id="printArea"></div>
+
+<script>
+const ADMIN_EMAIL = 'a01020581925@gmail.com';
+const DIRECTOR_NAME = '천명';
+
+if (!FIREBASE_READY) {
+  document.getElementById('setupWarn').style.display = 'block';
+  document.getElementById('setupWarn').innerHTML = 'Firebase가 아직 설정되지 않았습니다.<br>assets/js/firebase-config.js 값을 채워주세요.';
+} else {
+  firebase.auth().onAuthStateChanged((user) => {
+    if (!user || user.email !== ADMIN_EMAIL) { window.location.href = 'admin-login.html'; return; }
+    document.getElementById('page').style.display = 'block';
+    init();
+  });
+}
+
+/* ══ 사주 계산 로직 ══ */
+const GAN_KR = ['갑','을','병','정','무','기','경','신','임','계'];
+const GAN_HJ = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const ZHI_KR = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+const ZHI_HJ = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const CUTOFFS = [
+  {m:1, d:6, zhi:1}, {m:2, d:4, zhi:2}, {m:3, d:6, zhi:3}, {m:4, d:5, zhi:4},
+  {m:5, d:6, zhi:5}, {m:6, d:6, zhi:6}, {m:7, d:7, zhi:7}, {m:8, d:8, zhi:8},
+  {m:9, d:8, zhi:9}, {m:10,d:8, zhi:10}, {m:11,d:7, zhi:11}, {m:12,d:7, zhi:0},
+];
+function mod(n,m){ return ((n%m)+m)%m; }
+function toJDN(y,m,d){const a=Math.floor((14-m)/12);const y2=y+4800-a;const m2=m+12*a-3;return d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;}
+function getYearForPillar(y,m,d){ if (m<2||(m===2&&d<4)) return y-1; return y; }
+function getMonthZhi(m,d){ if (m===1&&d<6) return 0; let best=CUTOFFS[0]; for(const c of CUTOFFS){ if(c.m<m||(c.m===m&&c.d<=d)) best=c; } return best.zhi; }
+
+const BIRTH_TIME_TO_ZHI = {
+  '자시(23:00~00:59)':0, '축시(01:00~02:59)':1, '인시(03:00~04:59)':2, '묘시(05:00~06:59)':3,
+  '진시(07:00~08:59)':4, '사시(09:00~10:59)':5, '오시(11:00~12:59)':6, '미시(13:00~14:59)':7,
+  '신시(15:00~16:59)':8, '유시(17:00~18:59)':9, '술시(19:00~20:59)':10, '해시(21:00~22:59)':11
+};
+
+function calcPillars(dateVal, hourZhiIdx) {
+  const [y, m, d] = dateVal.split('-').map(Number);
+  const yearForPillar = getYearForPillar(y, m, d);
+  const yearGanIdx = mod(yearForPillar - 4, 10);
+  const yearZhiIdx = mod(yearForPillar - 4, 12);
+  const monthZhiIdx = getMonthZhi(m, d);
+  const monthStartGan = mod(mod(yearGanIdx, 5) * 2 + 2, 10);
+  const monthGanIdx = mod(monthStartGan + mod(monthZhiIdx - 2, 12), 10);
+  const jdn = toJDN(y, m, d);
+  const dayGanIdx = mod(jdn + 9, 10);
+  const dayZhiIdx = mod(jdn + 1, 12);
+  let hourGanIdx = null;
+  if (hourZhiIdx !== null) {
+    hourGanIdx = mod(mod(dayGanIdx, 5) * 2 + hourZhiIdx, 10);
+  }
+  return { yearGanIdx, yearZhiIdx, monthGanIdx, monthZhiIdx, dayGanIdx, dayZhiIdx, hourGanIdx, hourZhiIdx };
+}
+
+function pillarsToText(p) {
+  const y = GAN_HJ[p.yearGanIdx] + ZHI_HJ[p.yearZhiIdx] + '(' + GAN_KR[p.yearGanIdx] + ZHI_KR[p.yearZhiIdx] + ')';
+  const mo = GAN_HJ[p.monthGanIdx] + ZHI_HJ[p.monthZhiIdx] + '(' + GAN_KR[p.monthGanIdx] + ZHI_KR[p.monthZhiIdx] + ')';
+  const da = GAN_HJ[p.dayGanIdx] + ZHI_HJ[p.dayZhiIdx] + '(' + GAN_KR[p.dayGanIdx] + ZHI_KR[p.dayZhiIdx] + ')';
+  const ho = p.hourGanIdx === null ? '모름' : GAN_HJ[p.hourGanIdx] + ZHI_HJ[p.hourZhiIdx] + '(' + GAN_KR[p.hourGanIdx] + ZHI_KR[p.hourZhiIdx] + ')';
+  return `년주 ${y}  월주 ${mo}  일주 ${da}  시주 ${ho}`;
+}
+
+/* ══ 인물 입력 블록 ══ */
+function personInputHtml(prefix) {
+  return `
+    <div class="field-row2">
+      <div class="f"><label>이름</label><input id="${prefix}_name"></div>
+      <div class="f"><label>생년월일 (양력)</label><input type="date" id="${prefix}_date"></div>
+    </div>
+    <div class="field-row2">
+      <div class="f">
+        <label>태어난 시간</label>
+        <select id="${prefix}_time">
+          <option value="모름">모름 / 모르겠음</option>
+          <option value="자시(23:00~00:59)">자시 (23:00~00:59)</option>
+          <option value="축시(01:00~02:59)">축시 (01:00~02:59)</option>
+          <option value="인시(03:00~04:59)">인시 (03:00~04:59)</option>
+          <option value="묘시(05:00~06:59)">묘시 (05:00~06:59)</option>
+          <option value="진시(07:00~08:59)">진시 (07:00~08:59)</option>
+          <option value="사시(09:00~10:59)">사시 (09:00~10:59)</option>
+          <option value="오시(11:00~12:59)">오시 (11:00~12:59)</option>
+          <option value="미시(13:00~14:59)">미시 (13:00~14:59)</option>
+          <option value="신시(15:00~16:59)">신시 (15:00~16:59)</option>
+          <option value="유시(17:00~18:59)">유시 (17:00~18:59)</option>
+          <option value="술시(19:00~20:59)">술시 (19:00~20:59)</option>
+          <option value="해시(21:00~22:59)">해시 (21:00~22:59)</option>
+        </select>
+      </div>
+      <div class="f"></div>
+    </div>`;
+}
+
+function readPerson(prefix) {
+  const name = document.getElementById(prefix + '_name').value || '(이름 미입력)';
+  const date = document.getElementById(prefix + '_date').value;
+  const timeVal = document.getElementById(prefix + '_time').value;
+  const hourZhiIdx = BIRTH_TIME_TO_ZHI.hasOwnProperty(timeVal) ? BIRTH_TIME_TO_ZHI[timeVal] : null;
+  if (!date) return { name, date: '(생년월일 미입력)', saju: '-' };
+  const p = calcPillars(date, hourZhiIdx);
+  return { name, date, saju: pillarsToText(p) };
+}
+
+function candidateRowHtml(prefix, i) {
+  return `<div class="candidate-row">
+    <div class="f"><label>등급</label><input id="${prefix}_grade_${i}" placeholder="예: 1순위(최상)"></div>
+    <div class="f"><label>날짜</label><input type="date" id="${prefix}_date_${i}"></div>
+    <div class="f"><label>비고</label><input id="${prefix}_note_${i}" placeholder="시간, 참고사항 등"></div>
+  </div>`;
+}
+
+function readCandidates(prefix, count) {
+  const rows = [];
+  for (let i = 0; i < count; i++) {
+    const grade = document.getElementById(prefix + '_grade_' + i).value;
+    const date = document.getElementById(prefix + '_date_' + i).value;
+    const note = document.getElementById(prefix + '_note_' + i).value;
+    if (grade || date || note) rows.push({ grade: grade || '-', date: date || '-', note: note || '' });
+  }
+  return rows;
+}
+
+function init() {
+  document.getElementById('naming-person').innerHTML = personInputHtml('naming');
+  document.getElementById('marriage-groom').innerHTML = personInputHtml('groom');
+  document.getElementById('marriage-bride').innerHTML = personInputHtml('bride');
+  document.getElementById('birth-dad').innerHTML = personInputHtml('dad');
+  document.getElementById('birth-mom').innerHTML = personInputHtml('mom');
+
+  let mc = '';
+  for (let i = 0; i < 5; i++) mc += candidateRowHtml('mcand', i);
+  document.getElementById('marriage-candidates').innerHTML = mc;
+
+  let bc = '';
+  for (let i = 0; i < 3; i++) bc += candidateRowHtml('bcand', i);
+  document.getElementById('birth-candidates').innerHTML = bc;
+
+  setType('naming');
+
+  // 예약 목록에서 넘어온 경우 자동 채우기
+  const params = new URLSearchParams(location.search);
+  const type = params.get('type');
+  if (type) {
+    setType(type);
+    const name = params.get('name') || '';
+    const date = params.get('date') || '';
+    const time = params.get('time') || '모름';
+    const gender = params.get('gender') || '';
+    let targetPrefix = 'naming';
+    if (type === 'marriage') targetPrefix = gender === 'female' ? 'bride' : 'groom';
+    if (type === 'birth') targetPrefix = gender === 'female' ? 'mom' : 'dad';
+    if (document.getElementById(targetPrefix + '_name')) {
+      document.getElementById(targetPrefix + '_name').value = name;
+      document.getElementById(targetPrefix + '_date').value = date;
+      document.getElementById(targetPrefix + '_time').value = time;
+    }
+  }
+}
+
+function setType(type) {
+  ['naming', 'marriage', 'birth'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('active', t === type);
+    document.getElementById('section-' + t).classList.toggle('active', t === type);
+  });
+}
+
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`;
+}
+
+function candidatesTableHtml(rows) {
+  if (rows.length === 0) return '<p class="doc-text">(입력된 후보 없음)</p>';
+  return `<table class="doc-table doc-cand-table">
+    <tr><th>등급</th><th>날짜</th><th>비고</th></tr>
+    ${rows.map(r => `<tr><td>${escapeHtml(r.grade)}</td><td>${escapeHtml(r.date)}</td><td>${escapeHtml(r.note)}</td></tr>`).join('')}
+  </table>`;
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function sectionHead(num, label, hint) {
+  return `<div class="doc-sec-head"><span class="doc-num">${num}</span><span class="doc-sec-title2">${label}</span>${hint ? `<span class="doc-sec-hint">${hint}</span>` : ''}</div>`;
+}
+function fieldPair(label1, val1, label2, val2) {
+  return `<div class="doc-field-pair">
+    <div class="doc-field"><span class="doc-field-label">${label1}</span><span class="doc-field-value">${escapeHtml(val1)}</span></div>
+    <div class="doc-field"><span class="doc-field-label">${label2}</span><span class="doc-field-value">${escapeHtml(val2)}</span></div>
+  </div>`;
+}
+function fieldFull(label, val) {
+  return `<div class="doc-field-pair"><div class="doc-field"><span class="doc-field-label">${label}</span><span class="doc-field-value">${escapeHtml(val)}</span></div></div>`;
+}
+function box(text) {
+  return `<div class="doc-box"><div class="doc-box-text">${escapeHtml(text || '-')}</div><div class="doc-box-icon">🌿</div></div>`;
+}
+function divider() {
+  return `<div class="doc-divider"><span>◆</span></div>`;
+}
+
+function generateDoc(type) {
+  let title, bodyHtml;
+
+  if (type === 'naming') {
+    const p = readPerson('naming');
+    title = '도운사, 작명서';
+    bodyHtml = `
+      ${sectionHead('01', '내담자 정보')}
+      ${fieldPair('이름', p.name, '생년월일', p.date)}
+      ${fieldFull('사주팔자', p.saju)}
+      ${divider()}
+      ${sectionHead('02', '이름')}
+      ${fieldPair('한글', document.getElementById('naming_name_kr').value || '-', '한자', document.getElementById('naming_name_hj').value || '-')}
+      ${divider()}
+      ${sectionHead('03', '수리·오행')}
+      ${box(document.getElementById('naming_suri').value)}
+      ${sectionHead('04', '원형이정(元亨利貞)')}
+      ${box(document.getElementById('naming_wonhyeong').value)}
+      ${sectionHead('05', '작명 소견')}
+      ${box(document.getElementById('naming_gyeon').value)}
+    `;
+  } else if (type === 'marriage') {
+    const groom = readPerson('groom');
+    const bride = readPerson('bride');
+    const cands = readCandidates('mcand', 5);
+    title = '도운사, 혼인택일상담서';
+    bodyHtml = `
+      ${sectionHead('01', '상담 정보')}
+      ${fieldPair('예식 지역', document.getElementById('marriage_region').value || '-', '희망 시기', document.getElementById('marriage_period').value || '-')}
+      ${fieldFull('상담사', '도운사 ' + DIRECTOR_NAME)}
+      ${divider()}
+      ${sectionHead('02', '신랑 · 신부 정보')}
+      ${fieldPair('신랑 이름', groom.name, '신랑 생년월일', groom.date)}
+      ${fieldFull('신랑 사주팔자', groom.saju)}
+      ${fieldPair('신부 이름', bride.name, '신부 생년월일', bride.date)}
+      ${fieldFull('신부 사주팔자', bride.saju)}
+      ${divider()}
+      ${sectionHead('03', '결혼택일 후보', '등급별 5가지')}
+      ${candidatesTableHtml(cands)}
+    `;
+  } else {
+    const dad = readPerson('dad');
+    const mom = readPerson('mom');
+    const cands = readCandidates('bcand', 3);
+    title = '도운사, 출산예정일 상담서';
+    bodyHtml = `
+      ${sectionHead('01', '부모 정보')}
+      ${fieldPair('아빠 이름', dad.name, '아빠 생년월일', dad.date)}
+      ${fieldFull('아빠 사주팔자', dad.saju)}
+      ${fieldPair('엄마 이름', mom.name, '엄마 생년월일', mom.date)}
+      ${fieldFull('엄마 사주팔자', mom.saju)}
+      ${divider()}
+      ${sectionHead('02', '제왕절개일자 후보', '등급별 3가지')}
+      ${candidatesTableHtml(cands)}
+    `;
+  }
+
+  document.getElementById('printArea').innerHTML = `
+    <div class="doc-frame">
+      <p class="doc-maintitle">${title.split(', ')[1]}</p>
+      <p class="doc-date-row">작성일 : ${todayStr()}</p>
+      ${bodyHtml}
+      ${divider()}
+      <p class="doc-closing">오늘의 상담이 더 나은 내일로 이어지길 바랍니다.</p>
+      <p class="doc-footer-brand">도운사 원장 &nbsp;<strong>${DIRECTOR_NAME}</strong> &nbsp;·&nbsp; 道運寺 DOWUNSA</p>
+    </div>
+  `;
+  document.title = title;
+  setTimeout(() => window.print(), 100);
+}
+</script>
+</body>
+</html>

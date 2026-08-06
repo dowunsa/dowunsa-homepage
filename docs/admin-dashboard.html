@@ -139,6 +139,7 @@
   <p class="logo">道運寺 예약 관리</p>
   <div class="head-actions">
     <button class="head-btn" onclick="requestPush()">🔔 알림 켜기</button>
+    <a href="admin-documents.html" class="head-btn">상담서 작성</a>
     <a href="admin-photos.html" class="head-btn">사진 관리</a>
     <a href="admin-saju.html" class="head-btn">사주 계산기</a>
     <button class="head-btn" onclick="logout()">로그아웃</button>
@@ -463,6 +464,7 @@ function renderCard(id, r) {
       <button class="card-btn primary" onclick="openConfirmModal('${id}')">${isConfirmed ? '확정 일정 수정' : '예약 확정'}</button>
       <button class="card-btn" onclick="toggleSaju('${id}','${r.birth_date||''}','${r.birth_time||''}','${r.birth_calendar||'solar'}','${r.gender||'male'}')">사주 보기</button>
       <button class="card-btn" onclick="toggleDone('${id}', ${!isDone})">${isDone ? '완료 취소' : '완료 처리'}</button>
+      ${DOC_TYPES[r.program] ? `<a class="card-btn primary" href="admin-documents.html?type=${DOC_TYPES[r.program]}&name=${encodeURIComponent(r.name||'')}&date=${encodeURIComponent(r.birth_date||'')}&time=${encodeURIComponent(r.birth_time||'모름')}&gender=${encodeURIComponent(r.gender||'')}" target="_blank" style="text-decoration:none;">상담서 작성</a>` : ''}
       <button class="card-btn danger" onclick="deleteReservation('${id}')">삭제</button>
     </div>
     <div class="saju-panel" id="saju-${id}"></div>
